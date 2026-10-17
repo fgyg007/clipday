@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "displayName": "轻贴",
+  "developmentVersion": "0.2.0-dev",
+  "releaseStatus": "unreleased-integration-native-unverified",
+  "desktopModes": ["local-only", "nas", "cloud-folder"],
+  "androidModes": ["nas"],
+  "identities": {"mac":"io.jlmac.ClipDay.Cloud","windows":"ClipDay.Cloud","android":"io.jlmac.clipday.android"},
+  "preserveExistingNasIdentity": true,
+  "standaloneLocalIdentity": "io.jlmac.ClipDay",
+  "standaloneHistoryMigration": "not-implemented-requires-opt-in-and-native-validation",
+  "namespaces": {"nas":"ClipDaySync","cloud-folder":"ClipDayDrive/v1"},
+  "providers": [{"id":"baidu","compatibility":"not-device-tested"},{"id":"onedrive","compatibility":"not-device-tested"},{"id":"icloud","compatibility":"not-device-tested"}],
+  "providerOAuthImplemented": false,
+  "pausedWork": {"baiduApi":"paused-user-request-not-part-of-unified-build"}
+}

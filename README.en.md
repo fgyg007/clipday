@@ -1,85 +1,66 @@
-# ClipDay · 轻贴
+# ClipDay · Unified entry (unreleased integration)
 
-**A local macOS clipboard history with a rolling 24-hour lifetime, direct paste, and one-click export to Downloads.**
+The development source now offers local-only, NAS, and cloud-synced-folder modes in one desktop entry. Android currently supports NAS only. Native builds and real Baidu/OneDrive/iCloud interoperability are NOT verified. The current Mac source output is `轻贴.app`; the original NAS app IDs and stored data are retained, while each new mode has separate state. Mode switching stops operations and requires a manual restart.
 
-[简体中文](README.md) · [Download DMG](https://github.com/fgyg007/clipday/releases/latest) · [Installation](docs/INSTALL.md) · [Report an issue](https://github.com/fgyg007/clipday/issues)
+The standalone local 1.2.0 feature source, E2E assets and historical documents are preserved. Its separate app identity and history have NOT been migrated. Do not remove old installations or repositories. See [consolidation and migration limits](docs/CONSOLIDATION.md) and [mode setup](Desktop/README.md).
 
-## What it does
+AI setup help is copied only after user action and contains allowlisted generic information, not paths, server addresses, credentials, pairing keys or clipboard content. It is never sent directly to an AI service.
 
-ClipDay is a native Swift / SwiftUI menu-bar utility. Keep using `⌘C` and `⌘V` normally while it records copied text and images in the background. Open history, search for something you copied earlier, and click it to paste into your previously selected application.
+The following historical download instructions describe old NAS preview packages, NOT this integration branch.
 
-| Feature | Behavior |
-| --- | --- |
-| Clipboard history | Captures text and PNG/TIFF images; rich text is stored as plain text |
-| Rolling 24-hour retention | Each item expires independently; expired history is also cleaned on launch |
-| Direct paste | Returns to the previously selected app and sends Paste, without pressing Return; requires Accessibility permission |
-| Custom global shortcut | Default: `⌃⌥V` (Control + Option + V); record another combination in Settings |
-| Conflict checks | Checks enabled macOS shortcuts and attempts exclusive global registration |
-| Search | Search text history |
-| Export | Saves TXT or PNG files to Downloads; exports survive history expiration |
-| Background operation | Closing the history window keeps recording; pause/resume and login launch are available |
-| Local storage | No account, cloud service, telemetry, or clipboard upload |
 
-## System requirements
+**Copy on one computer, paste on another. Share text between macOS, Windows and Android through your own NAS, with a 24-hour history.**
 
-- **Apple Silicon Mac (M-series), macOS 14 Sonoma or later.**
-- The downloadable DMG is **arm64 only**; Intel Macs, Windows, and Linux are not supported by this package.
-- The app's UI is **Simplified Chinese**. Documentation is available in Chinese and English.
-- No Xcode, Python, or other development tools are needed to run the app. No internet connection is required.
-- Deployment target: macOS 14. Runtime verification: Apple Silicon / macOS 27.0.1. Not every OS version has been tested.
+[中文](README.md) · [Downloads](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1) · [Setup](docs/INSTALL.md) · [Issues](https://github.com/fgyg007/clipday-cloud/issues)
 
-## Download and use
+This preview requires access to the same NAS share. Android is intended for the same Wi-Fi network. No ClipDay account or developer relay server is required. Mobile-network access is not configured by the app. The UI is Simplified Chinese.
 
-1. Download `ClipDay-1.2.0-arm64.dmg` from the [latest release](https://github.com/fgyg007/clipday/releases/latest).
-2. Open it, drag `轻贴.app` to **Applications**, eject the disk image, and launch the installed app.
-3. Copy some text and open history using the menu-bar icon or `⌃⌥V`.
-4. For direct paste, enable ClipDay in **System Settings → Privacy & Security → Accessibility**. Focus an input field in another app, open ClipDay, then click a history item.
-5. Click an item's save icon to export it to Downloads. Right-click and select `仅复制，不粘贴` for copy-only behavior.
+Current source renames the existing NAS app to **轻贴 NAS 版** (ClipDay NAS). This display-only rename is not released: existing downloads retain their old labels, filenames and versions. Bundle/package IDs, storage, pairing and NAS protocol are unchanged; Android remains supported for NAS.
 
-**This release is ad-hoc signed, without Apple Developer ID signing or notarization.** macOS may block the first launch. Read the [installation guide](docs/INSTALL.md) for source verification, checksums, and the system's Open Anyway option.
+See [product/version boundaries](docs/PRODUCTS.md) for development tracks versus published builds. The separate Baidu desktop product is not connected to a safe authorization flow yet; OneDrive/iCloud are planned only, not implemented or included in downloads.
 
-## Permissions and troubleshooting
+## Downloads
 
-- Clipboard capture and automatic paste are separate. macOS paste-access settings control clipboard reads; Accessibility permission enables focus restoration and automatic paste. Allow clipboard access if prompted.
-- An update can change an ad-hoc signature. If the Accessibility switch is enabled but permission is still missing, quit the app, remove its old entry, add the current installed copy, and enable it again. Avoid duplicate installations.
-- If selecting history only copies, check Accessibility permission and focus an editable target first. Paste is cancelled if the target exits, another app takes focus, clipboard contents change, or modifier keys remain held.
-- Recording should continue with the window hidden. Check pause state, whether the app was quit, paste-access permission, content type, and size. Report the source app, macOS version, and steps if it still fails; do not share private clipboard text.
-- Shortcut detection cannot enumerate every application's internal shortcuts, independent keyboard hooks, or future conflicts. Change the combination or use the menu-bar icon when needed.
+| Platform | Version | Package | Requirements |
+| --- | --- | --- | --- |
+| macOS | 0.1.1 | [ZIP](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.1-macos-arm64.zip) | Apple Silicon, macOS 14+ |
+| Windows | 0.1.3 | [ZIP](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.3-windows-x64.zip) | x64; portable, .NET runtime included |
+| Android | 0.1.0 | [APK](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.0-android.apk) | Android 8.0+, NAS reachable over Wi-Fi |
 
-## Storage, privacy, and limitations
+Use the [SHA-256 manifest](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/SHA256SUMS.txt) to verify downloads. GitHub's automatic Source code archives are not installers. Client versions are independent and use the same sync protocol.
 
-- Maximum **20 MiB per item**, **200 MiB total**, **2,000 items**. Oldest items are evicted when limits are reached. Copying the same content again refreshes its timestamp; selecting history does not.
-- Finder file copies, rich-text formatting, and cross-device sync are not supported.
-- Source-marked concealed, transient, or autogenerated content is skipped. **Unmarked passwords may still be recorded**; pause before handling sensitive content.
-- History is stored in `~/Library/Application Support/io.jlmac.ClipDay/`. It is local and **not separately encrypted**. Directories use mode 700 and index/payload files mode 600.
-- Expiration does not erase the current system clipboard, exported files, or copies in system backups. Cleanup cannot run while the app is quit or the Mac is asleep.
-- Polling is approximately every 0.6 seconds; rapid copies may overwrite content before capture. Automatic paste depends on the target accepting standard `⌘V` events.
+## How it works
 
-## Build from source
+1. Choose an existing folder that both desktop computers can read and write on your NAS.
+2. Create a sync space on one desktop. It displays a six-digit code with a two-minute countdown.
+3. Enter that code on another device accessing the same folder. Additional devices can join using a new code from an already paired desktop.
 
-```sh
-git clone https://github.com/fgyg007/clipday.git
-cd clipday
-zsh scripts/test.sh
-zsh scripts/build.sh
-zsh scripts/package.sh
-```
+Mac and Windows synchronize recent copied text automatically during a continuous connection. First-load, offline backlog and concurrent updates may be added to history without replacing the clipboard. On Android, share text to ClipDay and confirm sending; open ClipDay to receive and copy an item manually. Android does not monitor the background clipboard.
 
-See [development notes](docs/DEVELOPMENT.md) for dependencies and packaging. Core tests use temporary directories and a named test pasteboard.
+## Installation
 
-The optional native integration test controls a disposable text window and the installed app, temporarily using the system clipboard:
+These steps describe existing release downloads. Current source builds `轻贴.app` on Mac and uses “轻贴 NAS 版” for Windows and Android display labels. The Windows executable remains `ClipDay.Cloud.exe`. Quit the old Mac copy before using the newly named copy; both retain the same app identity.
 
-```sh
-zsh scripts/build-e2e.sh
-build/e2e-test --background-idle
-```
+- Mac: unzip and move `轻贴云版.app` to Applications. Default shortcut: Control + Option + Shift + V. This is separate from the local-only ClipDay app.
+- Windows: extract the entire ZIP and run `ClipDay.Cloud.exe`. Closing the window keeps the tray process running; use the tray menu to quit.
+- Android: install the APK using the phone's normal installation flow. Future updates must keep the same signing identity; do not uninstall first if you want to preserve local state.
 
-Install ClipDay in `~/Applications` or `/Applications`, grant Accessibility permission to both the app and the test host, and save a shortcut setting first. Do not interact with other windows or copy real content during the test. It attempts to restore the original clipboard and removes generated history, preserving newer external copies. It is not part of normal installation.
+The Mac package is ad-hoc signed and not notarized. Windows has no Authenticode signature. Android uses a fixed release signing key. No development tools are needed to run the packages.
 
-## Verification status
+## Scope and data
 
-Core checks cover delayed clipboard delivery, consecutive copies and history selection, expiration, export, shortcuts, and paste gates. The installed v1.2.0 passed native text-window checks including capture after 75 seconds with its window hidden, direct history paste, and subsequent new copies. This does not establish compatibility with every third-party editor, image destination, or older OS. A background missed-copy report was not reproduced by this text-window journey.
+Text only, at most 1 MiB per item, expiring after 24 hours. Cleanup requires an active client with NAS access and does not erase NAS snapshots or backups. Records are encrypted with AES-256-GCM. Space keys use platform protection; Mac's local history is not separately encrypted. See [data handling](docs/PRIVACY.md) and the [protocol](docs/CLOUD-PROTOCOL.md).
 
-## License
+There is no individual device revocation, automatic key rotation, global recall or auto-updater. No iOS, Linux, Intel Mac or native Windows ARM package is provided.
 
-[MIT](LICENSE). Issues and focused contributions are welcome. Companion app: [AppSweep · 轻卸](https://github.com/fgyg007/appsweep), for reviewing and removing apps and common user-level leftovers.
+Desktop functionality has been tried by the maintainer. Automated checks cover synchronization, pairing and cross-language interoperability. Android passed isolated Samba and Android 15 emulator journeys, including offline/restart recovery; physical-phone and personal-NAS acceptance is still pending. Other OS and NAS combinations are not exhaustively tested.
+
+## Source
+
+Swift/SwiftUI on Mac, C#/WinForms on Windows, native Java/SMBJ on Android. See [development](docs/DEVELOPMENT.md). This repository hosts public source and downloadable releases; it has no automated build workflow.
+
+[MIT License](LICENSE), with third-party notices retained. Related projects: [ClipDay](https://github.com/fgyg007/clipday) · [AppSweep](https://github.com/fgyg007/appsweep).
+
+## Reliability improvements in current source
+
+These changes are not included in the existing release downloads. Failed local captures remain retryable; unreadable individual Mac history entries do not abort the whole history load. A separate privacy pause blocks new capture and synchronization without deleting history or queues; sync-only pause still permits local recording. Connection checks guide path/read/write validation and create-versus-join setup. Local persistence and NAS upload are distinct states: the protocol has no receiver receipt, so upload does not mean another device received or pasted the text. Already-issued I/O may finish after pausing; pause cannot retract data. Existing expiry rules still apply. See [privacy](docs/PRIVACY.md) and [development](docs/DEVELOPMENT.md) for limitations.

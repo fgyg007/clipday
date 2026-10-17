@@ -6,19 +6,17 @@ labels: bug
 assignees: ''
 ---
 
-**Environment / 运行环境**
-- App version / 应用版本:
-- macOS version / 系统版本:
-- Chip / 芯片:
+**Environment / 环境**
+- 客户端与版本（Mac / Windows / Android）：
+- 系统版本、CPU 架构或手机型号：
+- NAS 系统版本（请勿附地址、账号或密码）：
 
 **Steps / 复现步骤**
 1.
 
-**Expected / 预期行为**
+**Expected / 预期结果**
 
-**Actual / 实际行为**
+**Actual / 实际结果**
 
-**Relevant permissions / 相关权限状态**
-
-Do not include private clipboard content, account details, or personal paths.
-请勿提供私人剪贴板正文、账号信息或个人路径。
+请使用合成测试文字，勿公开真实剪贴板、NAS 连接资料、配对码或密钥。
+Do not include private clipboard content, NAS credentials, pairing codes or keys.

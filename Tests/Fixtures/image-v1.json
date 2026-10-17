@@ -1,0 +1,33 @@
+{
+  "description": "Public deterministic test vector only. Fixed keys/nonces MUST NOT be used in production. Envelope nonce+ciphertext+tag; UTF-8 AAD.",
+  "keyBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+  "space": "11111111-1111-4111-8111-111111111111",
+  "id": "22222222-2222-4222-8222-222222222222",
+  "pngBase64": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAGUlEQVR4nAXBAQ0AAAjAINwsbvILImlH4h4/gAaBNbRWFQAAAABJRU5ErkJggg==",
+  "manifest": {
+    "v": 1,
+    "kind": "image",
+    "id": "22222222-2222-4222-8222-222222222222",
+    "space": "11111111-1111-4111-8111-111111111111",
+    "device": "33333333-3333-4333-8333-333333333333",
+    "name": "测试设备 Mac",
+    "seq": 3,
+    "created": 1800000000000,
+    "expires": 1800086400000,
+    "observed": {
+      "44444444-4444-4444-8444-444444444444": 2
+    },
+    "mime": "image/png",
+    "width": 2,
+    "height": 2,
+    "byteCount": 82,
+    "chunkSize": 1048576,
+    "chunks": 1,
+    "sha256": "445d68236cc530d353247361256337fce1c9aa9f0f95b06825dcfb9f64def069"
+  },
+  "manifestPlaintextBase64": "eyJ2IjoxLCJraW5kIjoiaW1hZ2UiLCJpZCI6IjIyMjIyMjIyLTIyMjItNDIyMi04MjIyLTIyMjIyMjIyMjIyMiIsInNwYWNlIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIiwiZGV2aWNlIjoiMzMzMzMzMzMtMzMzMy00MzMzLTgzMzMtMzMzMzMzMzMzMzMzIiwibmFtZSI6Iua1i+ivleiuvuWkhyBNYWMiLCJzZXEiOjMsImNyZWF0ZWQiOjE4MDAwMDAwMDAwMDAsImV4cGlyZXMiOjE4MDAwODY0MDAwMDAsIm9ic2VydmVkIjp7IjQ0NDQ0NDQ0LTQ0NDQtNDQ0NC04NDQ0LTQ0NDQ0NDQ0NDQ0NCI6Mn0sIm1pbWUiOiJpbWFnZS9wbmciLCJ3aWR0aCI6MiwiaGVpZ2h0IjoyLCJieXRlQ291bnQiOjgyLCJjaHVua1NpemUiOjEwNDg1NzYsImNodW5rcyI6MSwic2hhMjU2IjoiNDQ1ZDY4MjM2Y2M1MzBkMzUzMjQ3MzYxMjU2MzM3ZmNlMWM5YWE5ZjBmOTViMDY4MjVkY2ZiOWY2NGRlZjA2OSJ9",
+  "manifestAad": "clipday-image-manifest-v1:11111111-1111-4111-8111-111111111111",
+  "manifestEnvelopeBase64": "AAECAwQFBgcICQoLPCCgOf/U7jnmKPnvk9NaBO634FHSV30VXEXfpy9bMoAzIpzOgvMgqkaJS9+6tQUA3GtSoGjkkegNpRgrKtHH3NIQ5AmjsEUEPm6IX96+P9kJu/hPR1JiWdDJr/1J3YG8+sl015Vw+SuvLQ+DeUQQXZZFBs6VrEb/b8V1/rHVXT2IYTPrh+T4YCXVe5IO93TxBcfOBgYioHm/bNtEyeHazL+18HSEmu5EhYVocTcvE1MzcC+GDIs+3Qb97OUCoMbRKX+m2G6vs6hDM7fEgHDhtNFOyEYNMIrBQaG25SQw/5MxRqeN3BE7FWJ3gD6BIUxhmKOVV/JS+sBlHQIXqaY5oyDlxqSp7nwKWutGM4MADj7ugOf1tL+1gkUbWWU+wI5/NTfqfJj//Gq+HlczZ/CC6bqjNj8u8eBn9lY/OrVKLI29/V0QuUxagcaJHEgp8SdQvzi1/ehxxmc8zQxEt4l603tMkazrPyGiWsqGGaaFVhCxyilVzJJotPGOR/7mZnUQ1uuh67Ix8eaDRMpKWnYqtdE9D9iqE2KwDiXtdHnRiGAoSGJd8OJmFMPd7THGmdGcO1siKynhENPfi9aJ5c19QRxMmrnLMY9L0jid0tSoVnzvT0TsirokILu93Q==",
+  "chunkAad": "clipday-image-chunk-v1:11111111-1111-4111-8111-111111111111:22222222-2222-4222-8222-222222222222:0:82",
+  "chunkEnvelopeBase64": "DA0ODxAREhMUFRYXEa4nn3J85lk3KkjY2MNitVUD7ez2fTuok6T64OTSdvcI92ol+IxiIEuLklcvrRfajF578XXYekFF3RMbWPN1OB2rdX+np9xR9Xj+Pg5IpMpaqlRbgVy5/GTqtI6wUXheAWA="
+}

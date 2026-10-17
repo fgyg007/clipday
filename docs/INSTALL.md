@@ -1,59 +1,68 @@
-# 轻贴 / ClipDay — 安装与运行 · Installation
+# 安装与配对
 
-[中文项目说明](../README.md) · [English overview](../README.en.md)
+> 当前集成源码统一显示为“轻贴”，桌面可选仅本机、NAS、网盘文件夹；Android仅支持NAS。下文原发布包名称/版本是历史安装信息，未发布新包。完整模式引导与未完成的历史迁移见 [统一说明](../Desktop/README.md) 和 [合并计划](CONSOLIDATION.md)。
 
-## 中文
 
-### 运行环境
+[返回项目介绍](../README.md) · [下载 NAS 预览版](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1)
 
-- Apple Silicon Mac（M 系列，arm64）。本次 DMG **不支持 Intel Mac**，也不能用于 Windows、Linux 或 iOS。
-- macOS 14 Sonoma 或更新版本。最低部署目标为 14.0；实际验证环境为 macOS 27.0.1 / Apple Silicon，未逐一验证所有系统版本。
-- 应用界面为简体中文；无需 Xcode、Swift、Python 或其他开发环境，无需账号和网络连接。
+本文下载步骤对应现有 Release，仍使用旧名称“轻贴云版”（Android 显示“轻贴”）；当前源码尚未发布，显示名已改为“轻贴 NAS 版”。自行构建的 Mac 应用名为 `轻贴 NAS 版.app`，Windows 启动文件仍为 `ClipDay.Cloud.exe`，Android 应用及分享入口显示新名称。应用标识、存储、配对与 NAS 目录未迁移，Android 仍可加入 NAS 空间。
 
-### 下载与安装
+## Mac
 
-1. 从 [GitHub Releases](https://github.com/fgyg007/clipday/releases/latest) 下载 `ClipDay-版本号-arm64.dmg`，不要把自动生成的 Source code ZIP 当作安装包。
-2. 打开 DMG，将 `轻贴.app` 拖到其中的 **Applications** 文件夹快捷方式。没有权限写入 `/Applications` 时可复制到 `~/Applications`。
-3. 推出磁盘映像，从安装目录启动应用。不要从 DMG 内长期运行，也不要同时运行多个副本。
-4. 更新时先退出应用，再替换安装目录中的旧版本。退出不会删除本地数据。
+1. 下载 macOS arm64 ZIP，解压后将“轻贴云版.app”移到 Applications 或 `~/Applications`。仅支持 Apple Silicon，最低 macOS 14。
+2. 从安装目录启动。不要同时运行新旧名称的两个 NAS 客户端副本；本地版“轻贴”使用独立数据，可以保留。
+3. 如系统询问粘贴访问，允许读取剪贴板。点击历史后自动切回应用粘贴还需要为“轻贴云版”单独授权辅助功能；仅接收文字后自己按 `⌘V` 不需要辅助功能。
+4. 默认历史快捷键为 `⌃⌥⇧V`。
 
-### 首次打开与签名
+Mac 包为 ad-hoc 签名，没有 Developer ID 或公证。如果系统阻止启动，先确认来源、校验文件并确认信任，再按系统设置“隐私与安全性”中的“仍要打开”流程操作。不要关闭 Gatekeeper 或系统完整性保护。[Apple 官方说明](https://support.apple.com/102445)。
 
-此版本为 **ad-hoc 签名，未使用 Apple Developer ID，未经过 Apple 公证**。这是可下载的社区版本，不是 App Store 安装包。
+## Windows
 
-macOS 可能阻止首次启动。确认文件来自上面的官方仓库、校验值匹配且你信任该软件后，尝试打开一次，再到 **系统设置 → 隐私与安全性 → 仍要打开**，按系统提示确认。若组织策略不允许此操作，需要联系管理员。不要关闭 Gatekeeper 或系统完整性保护。
+1. 下载 Windows x64 ZIP，完整解压后运行 `ClipDay.Cloud.exe`。运行环境已随包附带，无需单独安装 .NET。
+2. 关闭窗口会继续在托盘运行；双击托盘图标打开历史，右键“退出”才停止同步。图标可能在托盘折叠区。
+3. 更新前先退出旧程序，解压新版到单独目录再运行；配置和历史仍在当前用户数据目录。
 
-请参阅 [Apple 官方打开应用说明](https://support.apple.com/102445)。系统提示和按钮名称可能随版本变化。
+EXE 未使用 Authenticode 签名，Windows 可能提示未知发布者。先确认仓库和校验值；不要为安装而关闭系统安全功能。旧系统、组织策略及不同 DPI 设置未穷尽验证。
 
-### 校验下载
+## Android
 
-将 DMG 和同一 Release 的 `SHA256SUMS.txt` 放在同一目录，打开终端进入该目录执行：
+1. 下载 APK，在手机中打开，按系统提示允许此次使用的浏览器或文件管理器安装。最低 Android 8.0。
+2. 手机连接可访问 NAS 的同一 Wi-Fi；访客网络隔离可能阻止连接。
+3. 填写 NAS 地址、共享名称、子目录、用户名与密码。电脑的盘符或 Mac 挂载路径不能直接用于手机。
+4. 从电脑获取新的配对码并加入；之后分享文字到轻贴确认发送，打开轻贴查看并手动复制收到的内容。
+
+升级时覆盖安装，不要先卸载或清除应用数据。正式包沿用固定签名；自己重新签名的 APK 无法直接覆盖官方包。更多用法见 [Android 说明](../Android/README.md)。
+
+## 共用同一个空间
+
+先在一台电脑创建空间。其他设备填写对应同一目录的路径，再输入 6 位数字加入；同一份 NAS 文件夹在不同系统上的路径可以不同。每次邀请 2 分钟有效，成功一次或输错 5 次后失效。第三台设备用已经连接的电脑重新生成数字即可加入。
+
+配对前确认账号可在目标目录读取、创建、重命名、删除文件。Mac 必须先在访达挂载 SMB 共享；安卓直接连接 SMB。只使用自己信任的设备，真实账号、路径和配对码不用发到 Issue。
+
+## 首次连接检查（当前源码）
+
+已有 Release 的安装包不会因源码更新而自动获得新功能。自行构建此版本后，打开“轻贴 NAS 版”，先使用连接检查，再决定“创建”或“加入”：
+
+1. 确认三台设备指向**同一个共享内目录**，不是各自同名的本地文件夹。Mac 先挂载共享，Windows 使用 UNC 路径或已连接盘符；安卓填写主机、共享名、共享内路径。
+2. 检查路径格式、目录可达性、读取及写入。诊断会在目标目录创建随机命名的临时探针，并检查读取／重命名／删除等所需操作；失败时不要通过修改系统安全设置来跳过检查。
+3. 只有第一台电脑“创建同步空间”。已有空间时，使用已连接电脑生成新的配对码，让其他设备“加入”；安卓只加入，不创建新空间。
+4. 用不含私人信息的短句测试双向收发。“本机已保存”与“NAS 已上传”是不同阶段；当前没有接收端回执，另一端是否收到请在另一端历史中核实。
+5. 不通时依次检查 NAS 是否在线、共享是否挂载、路径是否一致、账号目录权限、网络隔离及设备时间。连接检查通过不等于配对已完成，也不等于另一台设备在线。
+
+隐私暂停同时阻止新的记录及同步；仅暂停同步仍会记录到本机。暂停不能撤回已经发出的数据，也不会清空历史或队列。详见[数据与隐私说明](PRIVACY.md)。
+
+## 检查下载
+
+每个 Release 附带 `SHA256SUMS.txt`。下载对应平台的安装包和校验清单，Mac 可执行：
 
 ```sh
-shasum -a 256 -c SHA256SUMS.txt
+shasum -a 256 ClipDay-Cloud-0.1.1-macos-arm64.zip
 ```
 
-应显示 `OK`。校验值验证传输完整性，不等同于 Apple 签名或公证。
+Windows PowerShell 可执行：
 
-## English
+```powershell
+Get-FileHash .\ClipDay-Cloud-0.1.3-windows-x64.zip -Algorithm SHA256
+```
 
-### Requirements
-
-- An **Apple Silicon Mac (M-series, arm64)**. This DMG does **not** support Intel Macs, Windows, Linux, or iOS.
-- macOS 14 Sonoma or later. The deployment target is 14.0; runtime checks were performed on macOS 27.0.1 / Apple Silicon, not every supported OS version.
-- The app UI is **Simplified Chinese**. No development tools, account, or internet connection are required to run it.
-
-### Install and update
-
-1. Download `ClipDay-version-arm64.dmg` from [GitHub Releases](https://github.com/fgyg007/clipday/releases/latest). The automatically generated Source code ZIP is not an installer.
-2. Open the DMG and drag `轻贴.app` onto the **Applications** shortcut. You may instead copy it to `~/Applications` if you cannot write to `/Applications`.
-3. Eject the image and launch the installed copy. Avoid running from the image or keeping multiple running copies.
-4. Quit the app before replacing it during an update. Quitting does not delete local data.
-
-### First launch and signing
-
-This release is **ad-hoc signed, without an Apple Developer ID certificate or Apple notarization**. It is a community download, not an App Store package.
-
-If macOS blocks it, first verify the source and checksum and decide whether you trust it. Attempt to open it, then use **System Settings → Privacy & Security → Open Anyway** if available, and follow the system prompts. Managed Macs may prohibit this; contact your administrator. Do not disable Gatekeeper or System Integrity Protection. See [Apple's official instructions](https://support.apple.com/102445).
-
-For integrity verification, download `SHA256SUMS.txt` alongside the DMG and run `shasum -a 256 -c SHA256SUMS.txt` in that folder. Expect `OK`. A checksum is not a substitute for Developer ID signing or notarization.
+将结果与清单对应行比较。只有下载了清单中的全部文件时，才可使用 `shasum -a 256 -c SHA256SUMS.txt` 一次校验全部。校验值用于检查下载完整性，不替代平台签名或对来源的判断。

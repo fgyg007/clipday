@@ -56,6 +56,46 @@ import Carbon
         do { _ = try store.append(kind: .text, data: Data(repeating: 65, count: ClipStore.maxItemBytes + 1), now: t) } catch { oversizeRejected = true }
         try check(oversizeRejected, "oversize entries are rejected")
 
+        // Missing or corrupt payloads are isolated without throwing away their index
+        // entries, so restored files recover without disabling new capture.
+        let damaged = ClipStore(directory: root.appendingPathComponent("damaged-history"))
+        let retained = try damaged.append(kind: .text, data: Data("healthy history".utf8), now: t)
+        let missing = try damaged.append(kind: .text, data: Data("temporarily missing".utf8), now: t)
+        let corrupt = try damaged.append(kind: .text, data: Data("original bytes".utf8), now: t)
+        let missingFile = damaged.payloads.appendingPathComponent(missing.id.uuidString + ".bin")
+        let corruptFile = damaged.payloads.appendingPathComponent(corrupt.id.uuidString + ".bin")
+        try fm.removeItem(at: missingFile)
+        try Data("damaged bytes".utf8).write(to: corruptFile)
+        let recoveredStore = ClipStore(directory: damaged.directory)
+        try recoveredStore.load(now: t)
+        try check(recoveredStore.clips.map(\.id) == [retained.id] && recoveredStore.unavailableCount == 2, "one missing and one corrupt blob do not abort healthy history")
+        _ = try recoveredStore.append(kind: .text, data: Data("capture remains available".utf8), now: t)
+        try check(recoveredStore.clips.count == 2 && fm.fileExists(atPath: corruptFile.path), "new capture works and isolated corrupt bytes are retained")
+        try missing.data.write(to: missingFile)
+        try recoveredStore.prune(now: t.addingTimeInterval(1))
+        try check(recoveredStore.clips.contains { $0.id == missing.id } && recoveredStore.unavailableCount == 1, "restoring a missing blob recovers its original ID and expiry")
+        let damageReload = ClipStore(directory: damaged.directory); try damageReload.load(now: t.addingTimeInterval(2))
+        try check(damageReload.unavailableCount == 1 && damageReload.clips.count == 3, "isolated entry remains in compatible history index across restart")
+
+        let retryPB = NSPasteboard.withUniqueName(); defer { retryPB.releaseGlobally() }
+        let retryStore = ClipStore(directory: root.appendingPathComponent("retry-history"))
+        let retryModel = ClipboardModel(store: retryStore, pasteboard: retryPB, startMonitoring: false); retryModel.paused = false
+        // A directory at the index filename deterministically fails atomic index
+        // persistence, even when tests run as root; no real permissions are changed.
+        try fm.createDirectory(at: retryStore.database, withIntermediateDirectories: true)
+        retryPB.clearContents(); retryPB.setString("capture requiring retry", forType: .string)
+        retryModel.tick(now: t)
+        try check(retryModel.clips.isEmpty && retryStore.clips.isEmpty && retryModel.captureIssue != nil, "failed capture is not published as durably saved")
+        try fm.removeItem(at: retryStore.database)
+        retryModel.tick(now: t.addingTimeInterval(2)); retryModel.tick(now: t.addingTimeInterval(3))
+        try check(retryModel.clips.count == 1 && retryModel.clips.first?.created == t && retryModel.captureIssue == nil, "failed capture retries once without duplicate or renewed timestamp")
+        let retryReload = ClipStore(directory: retryStore.directory); try retryReload.load(now: t.addingTimeInterval(3))
+        try check(retryReload.clips.count == 1 && retryReload.clips.first?.id == retryModel.clips.first?.id, "successful retry is durable across restart")
+        retryModel.paused = true
+        retryPB.clearContents(); retryPB.setString("must remain private", forType: .string)
+        retryModel.paused = false; retryModel.tick(now: t.addingTimeInterval(4))
+        try check(!retryModel.clips.contains { $0.text == "must remain private" }, "resume never captures text copied while paused even without an intervening tick")
+
         let pb = NSPasteboard.withUniqueName()
         defer { pb.releaseGlobally() }
         let isolated = ClipStore(directory: root.appendingPathComponent("poll-history"))

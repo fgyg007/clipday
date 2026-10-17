@@ -1,0 +1,15 @@
+<resources>
+    <item name="nas_host" type="id" />
+    <item name="nas_share" type="id" />
+    <item name="nas_folder" type="id" />
+    <item name="nas_username" type="id" />
+    <item name="nas_password" type="id" />
+    <item name="pair_code" type="id" />
+    <item name="connect" type="id" />
+    <item name="composer" type="id" />
+    <item name="send" type="id" />
+    <item name="refresh" type="id" />
+    <item name="test_connection" type="id" />
+    <item name="privacy_pause" type="id" />
+    <item name="sync_pause" type="id" />
+</resources>

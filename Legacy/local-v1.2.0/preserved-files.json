@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "8f9ac029804bce3cd31e6cc3a5c57d3ce71409ca",
+  "sha256": {
+    "CHANGELOG.md": "5a4b227a49e58d5885106ca9b1bccd0b2ce034521d93ce27764e34d261464d70",
+    "Legacy/local-v1.2.0/README.en.md": "f3df7e8bfe4ebc868b316c98a84f935bf01db8ee54f46e241ef077a111e19342",
+    "Legacy/local-v1.2.0/README.md": "efc102ffc8033b50210f62ad7c8f59bb769ff910f95cb55dbeca02ec2e12ab36",
+    "Legacy/local-v1.2.0/docs/DEVELOPMENT.md": "39c2e3b8e06c2cfd393981c97f7a3f42936e6745f40b847c486896245b18022c",
+    "Legacy/local-v1.2.0/docs/INSTALL.md": "a7ed002ef7683485fe343b13aae6d285372f89cb1352e2552cbd7a3d1864ddc7",
+    "Legacy/local-v1.2.0/docs/RELEASE-NOTES.md": "70508215b1f9a6328d700e9d86c7b36d8bf8e7715932e332e8b38c82af283dac",
+    "Legacy/local-v1.2.0/scripts/build.sh": "140c3f3305e2d9fb98681af066ca803bb8d80744b8428e7532225aa453e456cf",
+    "Legacy/local-v1.2.0/scripts/package.sh": "291dfceab6aeb4ba363e60ba378b81352dbe98dbb17aee3a64420b0a8933950c",
+    "Tests/EndToEnd.swift": "522cfe50105d59c8ffdde8c27462529b47f00d30c1edc96bc299772828b18a91",
+    "Tests/PasteFixture.swift": "006119c9a8a70528c76e8245d4653e1faae9ff143d6f612514a593a299e0d0a0",
+    "scripts/build-e2e.sh": "2ab28deede40aa486b9bb330c1106779daa393c3bb086dc12be3a20bebe35d09"
+  }
+}

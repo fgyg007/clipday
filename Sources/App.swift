@@ -17,6 +17,7 @@ struct ClipRow: View {
                     VStack(alignment: .leading, spacing: 7) {
                         Text(clip.preview).font(.system(size: 13)).lineLimit(4).multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading)
                         HStack(spacing: 8) {
+                            if let source = clip.source { Text(source).lineLimit(1) }
                             Text(clip.created.formatted(date: .omitted, time: .shortened))
                             Text("·")
                             Text(ByteCountFormatter.string(fromByteCount: Int64(clip.data.count), countStyle: .file))
@@ -43,12 +44,16 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 VStack(alignment: .leading, spacing: 12) {
+                    #if CLOUD
+                    SyncSetupSettings(cloud: model.cloud, model: model)
+                    Divider()
+                    #endif
                     Label("全局快捷键", systemImage: "keyboard").font(.headline)
                     Text("当前：\(model.activeShortcutName)").font(.title2).monospaced()
                     HStack {
                         Button(model.recording ? "请按组合键…（Esc 取消）" : "录制新快捷键") { model.recording.toggle() }
                             .buttonStyle(.borderedProminent).tint(.teal)
-                        Button("恢复默认 ⌃⌥V") { model.recording = false; model.applyShortcut(.standard) }
+                        Button("恢复默认 \(Shortcut.standard.label)") { model.recording = false; model.applyShortcut(.standard) }
                         Button("重新检测") { model.recording = false; model.applyShortcut(model.shortcut) }
                     }
                     if !model.shortcutMessage.isEmpty {
@@ -66,7 +71,7 @@ struct SettingsView: View {
                     Label(model.pasteAuthorized ? "辅助功能已授权，可以直接粘贴" : "需要辅助功能权限", systemImage: model.pasteAuthorized ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                         .foregroundStyle(model.pasteAuthorized ? Color.teal : Color.orange)
                     Button(model.pasteAuthorized ? "查看辅助功能设置" : "开启直接粘贴…") { AutoPaster.openPermissions() }
-                    Text("在系统设置 → 隐私与安全性 → 辅助功能中开启“轻贴”。未授权时只会复制并提示，不会假装粘贴成功。右键历史可选择“仅复制”。")
+                    Text("在系统设置 → 隐私与安全性 → 辅助功能中开启“\(appTitle)”。未授权时只会复制并提示，不会假装粘贴成功。右键历史可选择“仅复制”。")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Divider()
@@ -87,13 +92,18 @@ struct SettingsView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 10) {
                     Label("本机保存", systemImage: "lock.shield").font(.headline)
-                    Text("不联网、不上传。跳过来源应用标记为私密或临时的内容；未标记的密码仍可能被记录，需要时可先暂停。历史清理不会清除系统当前剪贴板。")
+                    #if CLOUD
+                    Text("本机历史未另行加密。NAS 与云盘模式的同步文件端到端加密；本机模式不发送。隐私暂停停止本软件记录、发送和接收，但不能停止网盘客户端上传已写入文件。未标记的密码仍可能被记录，删除本机历史不删除远端历史或备份。")
                         .font(.caption).foregroundStyle(.secondary)
+                    #else
+                    Text("不联网、不上传。跳过标记为私密或临时的内容；未标记的密码仍可能被记录，需要时可先暂停。")
+                        .font(.caption).foregroundStyle(.secondary)
+                    #endif
                     HStack {
-                        Button(model.paused ? "继续记录" : "暂停记录") { model.togglePause() }
+                        Button(model.pauseActionTitle) { model.togglePause() }
                         Button("清空历史…") { model.clear() }.disabled(model.clips.isEmpty)
                         Spacer()
-                        Button("退出轻贴") { NSApp.terminate(nil) }
+                        Button("退出" + appTitle) { NSApp.terminate(nil) }
                     }
                 }
             }.padding(4)
@@ -109,11 +119,11 @@ struct ContentView: View {
             HStack(spacing: 12) {
                 Image(systemName: "doc.on.clipboard.fill").font(.system(size: 29)).foregroundStyle(.teal)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("轻贴").font(.system(size: 25, weight: .bold))
+                    Text(appTitle).font(.system(size: 25, weight: .bold))
                     Text("复制过的，都在这一天里。").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button { model.togglePause() } label: { Image(systemName: model.paused ? "play.circle" : "pause.circle").font(.title3) }.buttonStyle(.borderless).help(model.paused ? "继续记录" : "暂停记录")
+                Button { model.togglePause() } label: { Image(systemName: model.paused ? "play.circle" : "pause.circle").font(.title3) }.buttonStyle(.borderless).help(model.pauseActionTitle)
                 Button { model.settings.toggle(); model.recording = false } label: { Image(systemName: model.settings ? "list.bullet.rectangle" : "gearshape").font(.title3) }.buttonStyle(.borderless).help(model.settings ? "返回历史" : "设置")
             }
             if model.settings { SettingsView(model: model) }
@@ -125,11 +135,12 @@ struct ContentView: View {
                     Text(model.activeShortcutName).font(.caption).foregroundStyle(.secondary)
                 }.padding(12).background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10))
                 HStack {
-                    Label(model.paused ? "已暂停" : "正在记录", systemImage: model.paused ? "pause.fill" : "circle.fill").font(.caption).foregroundStyle(model.paused ? Color.orange : Color.teal)
+                    Label(model.recordingStatusTitle, systemImage: model.paused ? "pause.fill" : "circle.fill").font(.caption).foregroundStyle(model.paused ? Color.orange : Color.teal)
                     Spacer()
                     Text("\(model.filtered.count) 条 · 每条保留 24 小时").font(.caption).foregroundStyle(.secondary)
                 }
                 if !model.shortcutOK { Button { model.settings = true } label: { Label("快捷键需要调整，点击查看", systemImage: "exclamationmark.triangle") }.buttonStyle(.plain).font(.caption).foregroundStyle(.orange) }
+                if let issue = model.historyIssue { Label(issue, systemImage: "exclamationmark.triangle.fill").font(.caption).foregroundStyle(.orange) }
                 if let issue = model.captureIssue { Label(issue, systemImage: "exclamationmark.triangle.fill").font(.caption).foregroundStyle(.orange) }
                 if !model.pasteAuthorized {
                     HStack {
@@ -180,16 +191,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         installStandardMenus()
         model = ClipboardModel()
-        diagnosticObserver = DistributedNotificationCenter.default().addObserver(forName: Notification.Name("io.jlmac.ClipDay.requestStatus"), object: nil, queue: .main) { [weak self] _ in self?.writeDiagnosticState() }
+        diagnosticObserver = DistributedNotificationCenter.default().addObserver(forName: Notification.Name(appBundleID + ".requestStatus"), object: nil, queue: .main) { [weak self] _ in self?.writeDiagnosticState() }
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 650, height: 760), styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
-        window.title = "轻贴"; window.isReleasedWhenClosed = false; window.minSize = NSSize(width: 600, height: 680)
+        window.title = appTitle; window.isReleasedWhenClosed = false; window.minSize = NSSize(width: 600, height: 680)
         window.contentView = NSHostingView(rootView: ContentView(model: model)); window.center()
         window.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
         status = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         status.button?.image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "轻贴剪贴板历史")
         status.button?.target = self; status.button?.action = #selector(statusClick)
         status.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
-        status.button?.toolTip = "轻贴 · 剪贴板历史"
+        status.button?.toolTip = appTitle + " · 剪贴板历史"
         model.onShow = { [weak self] in self?.toggleWindow() }
         model.onPaste = { [weak self] in self?.pasteSelected() }
         activationObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main) { [weak self] note in
@@ -219,7 +230,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let main = NSMenu()
         let appItem = NSMenuItem(); main.addItem(appItem)
         let appMenu = NSMenu(); appItem.submenu = appMenu
-        appMenu.addItem(withTitle: "退出轻贴", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "退出" + appTitle, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         let editItem = NSMenuItem(); main.addItem(editItem)
         let edit = NSMenu(title: "编辑"); editItem.submenu = edit
         for (title, action, key) in [("撤销", "undo:", "z"), ("剪切", "cut:", "x"), ("复制", "copy:", "c"), ("粘贴", "paste:", "v"), ("全选", "selectAll:", "a")] {
@@ -257,10 +268,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func statusClick() {
         if NSApp.currentEvent?.type == .rightMouseUp {
             let menu = NSMenu()
-            menu.addItem(withTitle: "打开轻贴", action: #selector(showWindow), keyEquivalent: "").target = self
-            menu.addItem(withTitle: model.paused ? "继续记录" : "暂停记录", action: #selector(pause), keyEquivalent: "").target = self
+            menu.addItem(withTitle: "打开" + appTitle, action: #selector(showWindow), keyEquivalent: "").target = self
+            menu.addItem(withTitle: model.pauseActionTitle, action: #selector(pause), keyEquivalent: "").target = self
             menu.addItem(.separator())
-            menu.addItem(withTitle: "退出轻贴", action: #selector(quit), keyEquivalent: "").target = self
+            menu.addItem(withTitle: "退出" + appTitle, action: #selector(quit), keyEquivalent: "").target = self
             status.menu = menu; status.button?.performClick(nil); status.menu = nil
         } else { toggleWindow() }
     }
@@ -283,13 +294,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 @main enum ClipDayApp {
     static func main() {
         if CommandLine.arguments.contains("--request-status") {
-            DistributedNotificationCenter.default().postNotificationName(Notification.Name("io.jlmac.ClipDay.requestStatus"), object: nil, userInfo: nil, deliverImmediately: true)
+            DistributedNotificationCenter.default().postNotificationName(Notification.Name(appBundleID + ".requestStatus"), object: nil, userInfo: nil, deliverImmediately: true)
             return
         }
         if CommandLine.arguments.contains("--paste-status") {
             print("directPasteAuthorized=\(AutoPaster.authorized)")
             return
         }
+        #if CLOUD
+        if let running = NSRunningApplication.runningApplications(withBundleIdentifier: appBundleID).first(where: { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }) {
+            running.activate(options: [.activateAllWindows]); return
+        }
+        #endif
         let app = NSApplication.shared
         app.setActivationPolicy(.accessory)
         let delegate = AppDelegate(); app.delegate = delegate

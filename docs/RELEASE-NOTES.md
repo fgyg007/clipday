@@ -1,47 +1,23 @@
-# 轻贴 · ClipDay v1.2.0
+# 轻贴云版 · 首次 NAS 预览发布
 
-## 中文
+Release：`v0.1.0-preview.1`。这是本次多平台发布集合的标签，各客户端保留自己的版本号。
 
-首次开源发布，MIT 许可。
+| 平台 | 版本 | 文件 |
+| --- | --- | --- |
+| Mac | 0.1.1 | `ClipDay-Cloud-0.1.1-macos-arm64.zip` |
+| Windows | 0.1.3 | `ClipDay-Cloud-0.1.3-windows-x64.zip` |
+| Android | 0.1.0 | `ClipDay-Cloud-0.1.0-android.apk` |
 
-- 24 小时滚动文字/图片剪贴板历史、搜索与下载导出。
-- 自定义快捷键与系统/全局占用检测，辅助功能授权后的直接粘贴。
-- 延迟剪贴板交付重试，标准编辑菜单，选择历史前捕获尚未轮询的新复制。
-- 中英文文档、MIT 许可、arm64 DMG 与 SHA-256 校验。
+## 本次提供
 
-**下载：`ClipDay-1.2.0-arm64.dmg`。** 自动生成的 Source code ZIP/TAR 是源码，不是安装包。
+- 独立的公开源码仓库、MIT 许可、中英文介绍、安装说明、协议和测试代码。
+- Mac／Windows NAS 加密文字同步、6 位短码配对、2 分钟倒计时、离线队列和 24 小时历史。
+- Windows 托盘图标、浅色界面、配对成功后的状态保护及更高的默认历史窗口。
+- 安卓同一 Wi-Fi 下分享发送、前台接收和手动复制，可加入已有桌面空间。
+- 三个平台的可下载包与 `SHA256SUMS.txt`；Mac、安卓使用此前已验证的包，Windows 以相同应用逻辑重打包并移除开发机调试路径。
 
-**运行环境：Apple Silicon（M 系列，arm64），macOS 14 Sonoma 或更新。**不支持 Intel。本次实际验证在 macOS 27.0.1 / Apple Silicon 完成，未覆盖所有旧版本。应用界面为简体中文。
+这是预览版本：只同步文字，没有移动网络接入配置、安卓后台自动同步、设备撤销、自动密钥轮换或自动更新。安卓通过模拟器和隔离 Samba 测试，用户真机与实际 NAS 仍待验收。Mac 包未公证，Windows EXE 未做 Authenticode 签名。
 
-打开 DMG，把 `轻贴.app` 拖到 Applications，推出映像后运行。发布包采用 ad-hoc 签名，**没有 Apple Developer ID 签名或公证**；首次启动可能需要系统设置中的“仍要打开”。
+更新时退出旧桌面程序再替换，安卓覆盖安装；不要为更新先清除数据或重建同步空间。Source code ZIP/TAR 是源码，不是安装包。
 
-[中文介绍](https://github.com/fgyg007/clipday#readme) · [安装、权限与校验说明](https://github.com/fgyg007/clipday/blob/v1.2.0/docs/INSTALL.md)
-
-## English
-
-First public release under the MIT license.
-
-- Rolling 24-hour text/image history, search, and export to Downloads.
-- Custom shortcuts, system/global conflict checks, and Accessibility-enabled direct paste.
-- Retry delayed pasteboard delivery, standard editing menu, and capture pending copies before history selection.
-- Bilingual documentation, MIT license, arm64 DMG, and SHA-256 checksum.
-
-**Download: `ClipDay-1.2.0-arm64.dmg`.** The auto-generated Source code ZIP/TAR files are not installers.
-
-**Requires Apple Silicon (M-series, arm64), macOS 14 Sonoma or later.** Intel Macs are not supported by this package. Runtime verification was performed on macOS 27.0.1 / Apple Silicon, not every older OS version. The app UI is Simplified Chinese.
-
-Open the DMG, drag `轻贴.app` to Applications, eject the image, and launch the installed app. This release is **ad-hoc signed, without Developer ID signing or Apple notarization**. macOS may require the Open Anyway flow on first launch.
-
-[English overview](https://github.com/fgyg007/clipday/blob/v1.2.0/README.en.md) · [Installation and checksums](https://github.com/fgyg007/clipday/blob/v1.2.0/docs/INSTALL.md)
-
-## SHA-256
-
-Download `SHA256SUMS.txt` alongside the DMG, then run / 将校验文件与 DMG 放在同一目录，执行：
-
-```sh
-shasum -a 256 -c SHA256SUMS.txt
-```
-
-Direct paste requires Accessibility permission. After an ad-hoc-signed update, you may need to remove the old permission entry and add the current installed app again. / 直接粘贴需要辅助功能权限；更新后若旧授权失效，请移除旧项并重新添加当前安装的应用。
-
-Native text-window validation included recording with the window hidden for 75 seconds; behavior in all third-party apps is not guaranteed. / 已验证原生文字窗口中隐藏 75 秒后的采集，未覆盖所有第三方软件。
+[项目介绍](https://github.com/fgyg007/clipday-cloud) · [安装与配对](https://github.com/fgyg007/clipday-cloud/blob/v0.1.0-preview.1/docs/INSTALL.md) · [问题反馈](https://github.com/fgyg007/clipday-cloud/issues)

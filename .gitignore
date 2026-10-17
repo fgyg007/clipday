@@ -6,3 +6,10 @@ dist/
 *.p12
 *.p8
 *.mobileprovision
+**/bin/
+**/obj/
+*.pair
+Android/.gradle/
+Android/local.properties
+*.jks
+*.keystore

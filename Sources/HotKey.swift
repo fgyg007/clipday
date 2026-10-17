@@ -5,7 +5,11 @@ struct Shortcut: Codable, Equatable {
     let keyCode: UInt32
     let modifiers: UInt32 // Carbon modifier bits; independent of keyboard layout.
     let keyName: String
+    #if CLOUD
+    static let standard = Shortcut(keyCode: 9, modifiers: UInt32(controlKey | optionKey | shiftKey), keyName: "V")
+    #else
     static let standard = Shortcut(keyCode: 9, modifiers: UInt32(controlKey | optionKey), keyName: "V")
+    #endif
     var label: String {
         (modifiers & UInt32(controlKey) != 0 ? "⌃" : "") +
         (modifiers & UInt32(optionKey) != 0 ? "⌥" : "") +

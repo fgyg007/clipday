@@ -1,0 +1,18 @@
+plugins { id 'java-library' }
+java { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+dependencies {
+    api 'com.hierynomus:smbj:0.14.0'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.79'
+    compileOnly 'org.json:json:20240303'
+    testImplementation 'org.json:json:20240303'
+    testImplementation 'junit:junit:4.13.2'
+    runtimeOnly 'org.slf4j:slf4j-nop:2.0.9'
+}
+tasks.register('interop', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.jlmac.clipday.core.Interop'
+    args = (project.findProperty('interopArgs') ?: '').split(' ').findAll { it }
+    standardInput = System.in
+}
+tasks.register('interopClasspath') { dependsOn testClasses; doLast { println sourceSets.test.runtimeClasspath.asPath } }

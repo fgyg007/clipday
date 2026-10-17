@@ -1,0 +1,4 @@
+# Preserve upstream license text and the generated Windows wrapper verbatim.
+licenses/* -whitespace
+Android/app/src/main/assets/open_source.txt -whitespace
+Android/gradlew.bat whitespace=cr-at-eol

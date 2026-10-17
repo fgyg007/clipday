@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application android:name=".ClipDayApp" android:label="轻贴" android:icon="@drawable/ic_clipday"
+        android:theme="@style/AppTheme" android:allowBackup="false" android:fullBackupContent="false" android:dataExtractionRules="@xml/backup_rules"
+        android:supportsRtl="true" android:usesCleartextTraffic="false">
+        <provider android:name=".ImageProvider" android:authorities="io.jlmac.clipday.android.images"
+            android:exported="false" android:grantUriPermissions="false">
+            <grant-uri-permission android:pathPrefix="/image/" />
+        </provider>
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:label="发送到轻贴">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

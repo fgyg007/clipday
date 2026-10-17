@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms><EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <DefineConstants>$(DefineConstants);PRODUCT_DRIVE</DefineConstants>
+    <AssemblyName>ClipDay.Drive</AssemblyName><RootNamespace>ClipDay.Cloud</RootNamespace>
+    <Version>0.1.0-dev</Version><AssemblyVersion>0.1.0.0</AssemblyVersion><FileVersion>0.1.0.0</FileVersion>
+    <Product>轻贴云盘版</Product>
+    <ApplicationIcon>../ClipDay.Cloud/Assets/ClipDay.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../ClipDay.Cloud/*.cs" Link="%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../ClipDay.Cloud/Assets/ClipDay.ico" LogicalName="ClipDay.Cloud.Assets.ClipDay.ico" />
+    <None Include="../../licenses/BouncyCastle.md" Link="BouncyCastle-LICENSE.md" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="../ClipDay.Sync/ClipDay.Sync.csproj" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
+  </ItemGroup>
+  <Target Name="RetiredStandaloneDriveTarget" BeforeTargets="PrepareForBuild">
+    <Error Text="Standalone drive target is retired. Build Windows/ClipDay.Cloud for the unified 轻贴 app with runtime NAS / cloud-folder / local-only modes." />
+  </Target>
+</Project>

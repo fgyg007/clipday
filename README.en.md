@@ -1,66 +1,63 @@
-# ClipDay · Unified entry (unreleased integration)
+# ClipDay · Unified clipboard history and sync
 
-The development source now offers local-only, NAS, and cloud-synced-folder modes in one desktop entry. Android currently supports NAS only. Native builds and real Baidu/OneDrive/iCloud interoperability are NOT verified. The current Mac source output is `轻贴.app`; the original NAS app IDs and stored data are retained, while each new mode has separate state. Mode switching stops operations and requires a manual restart.
+**Keep a day of clipboard history and move text and images between your own devices.**
 
-The standalone local 1.2.0 feature source, E2E assets and historical documents are preserved. Its separate app identity and history have NOT been migrated. Do not remove old installations or repositories. See [consolidation and migration limits](docs/CONSOLIDATION.md) and [mode setup](Desktop/README.md).
+[中文](README.md) · [Installation](docs/INSTALL.md) · [Build and version notes](docs/RELEASE-NOTES.md) · [Issues](https://github.com/fgyg007/clipday/issues)
 
-AI setup help is copied only after user action and contains allowlisted generic information, not paths, server addresses, credentials, pairing keys or clipboard content. It is never sent directly to an AI service.
+One desktop app offers local-only, NAS and cloud-synced-folder modes. Android supports NAS only. No ClipDay account or developer relay server is required. The app UI is Simplified Chinese.
 
-The following historical download instructions describe old NAS preview packages, NOT this integration branch.
+## Current builds — 2026-10-18
 
+Mac native, Windows x64 cross-compilation and signed Android GitHub Actions builds have succeeded. These are validation previews; **no new GitHub Release has been published, and real-device interoperability is not yet accepted**.
 
-**Copy on one computer, paste on another. Share text between macOS, Windows and Android through your own NAS, with a 24-hour history.**
+| Platform | Build | Availability |
+| --- | --- | --- |
+| macOS | Unified development build; bundle 0.1.1 with 0.2.0-dev marker | Built and installed locally; no new public archive. Apple Silicon, macOS 14+ |
+| Windows | 0.2.0-preview.1 | Self-contained x64 ZIP generated locally, about 46.4 MiB; not uploaded to Releases. Run `ClipDay.Cloud.exe` |
+| Android | 0.2.0-preview.1, versionCode 2 | [GitHub Actions APK artifact](https://github.com/fgyg007/clipday/actions/runs/39104194060), about 3.1 MiB; Android 8.0+ |
 
-[中文](README.md) · [Downloads](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1) · [Setup](docs/INSTALL.md) · [Issues](https://github.com/fgyg007/clipday-cloud/issues)
+Sign in to GitHub and download `clipday-android-b6949d9dd606e0961b44cac5c2b04aa69ca33fc5` from the run's Artifacts section. It contains the APK and SHA256SUMS; retention is 30 days. The APK uses the same signing certificate as 0.1.0. Update in place without uninstalling; physical-phone upgrade testing is still pending.
 
-This preview requires access to the same NAS share. Android is intended for the same Wi-Fi network. No ClipDay account or developer relay server is required. Mobile-network access is not configured by the app. The UI is Simplified Chinese.
+Historical downloads remain available: [standalone local v1.2.0](https://github.com/fgyg007/clipday/releases/tag/v1.2.0) and [old NAS preview](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1). The old NAS packages are Mac 0.1.1 / Windows 0.1.3 / Android 0.1.0 and synchronize text only. They do not contain unified setup, cloud-folder mode or image sync. Source code ZIP/TAR downloads are not installers.
 
-Current source renames the existing NAS app to **轻贴 NAS 版** (ClipDay NAS). This display-only rename is not released: existing downloads retain their old labels, filenames and versions. Bundle/package IDs, storage, pairing and NAS protocol are unchanged; Android remains supported for NAS.
+## Choose a mode
 
-See [product/version boundaries](docs/PRODUCTS.md) for development tracks versus published builds. The separate Baidu desktop product is not connected to a safe authorization flow yet; OneDrive/iCloud are planned only, not implemented or included in downloads.
+- **Local-only:** desktop history without connecting to a sync folder.
+- **NAS:** desktops and Android access the same shared directory. Create a space on one desktop; join other devices with a six-digit, two-minute pairing code.
+- **Cloud folder:** desktops reuse an existing bidirectional sync client and fully downloaded local files. Pairing uses a full secret token, not the NAS code. No provider API or OAuth service is used.
 
-## Downloads
+Cloud-folder logic has passed synthetic replica tests. Real Baidu, OneDrive and iCloud compatibility remains unverified. Backup-only clients, virtual mounts and online-only placeholders are not equivalent to a tested bidirectional folder. Switching modes requires restarting and retains separate histories and queues. See [mode setup](Desktop/README.md).
 
-| Platform | Version | Package | Requirements |
-| --- | --- | --- | --- |
-| macOS | 0.1.1 | [ZIP](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.1-macos-arm64.zip) | Apple Silicon, macOS 14+ |
-| Windows | 0.1.3 | [ZIP](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.3-windows-x64.zip) | x64; portable, .NET runtime included |
-| Android | 0.1.0 | [APK](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.0-android.apk) | Android 8.0+, NAS reachable over Wi-Fi |
+## Features and limits
 
-Use the [SHA-256 manifest](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/SHA256SUMS.txt) to verify downloads. GitHub's automatic Source code archives are not installers. Client versions are independent and use the same sync protocol.
+- 24-hour text/image history. Mac supports search, TXT/PNG export, configurable shortcuts and direct paste after Accessibility authorization.
+- Automatic desktop text/image capture; Android text is sent through explicit sharing/input. Android image capture requires foreground focus and a readable content URI, with no background clipboard bypass.
+- AES-256-GCM sync records, persistent queues, retry, deduplication and damaged-history isolation. First connection and offline backlog do not blindly replace the current clipboard.
+- Separate privacy pause and sync-only pause. Pausing does not erase history or retract completed transfers.
+- Connection diagnostics and user-previewed, manually copied AI setup help; nothing is sent directly to an AI service.
 
-## How it works
+Images are limited to 20 MiB, 8192 per dimension and 16,777,216 pixels. Arbitrary files are not transferred. A successful write does not prove receipt on another device. See [image protocol](docs/IMAGE-PROTOCOL.md) and [privacy](docs/PRIVACY.md).
 
-1. Choose an existing folder that both desktop computers can read and write on your NAS.
-2. Create a sync space on one desktop. It displays a six-digit code with a two-minute countdown.
-3. Enter that code on another device accessing the same folder. Additional devices can join using a new code from an already paired desktop.
+## Installation and data
 
-Mac and Windows synchronize recent copied text automatically during a continuous connection. First-load, offline backlog and concurrent updates may be added to history without replacing the clipboard. On Android, share text to ClipDay and confirm sending; open ClipDay to receive and copy an item manually. Android does not monitor the background clipboard.
+The Mac app is now `轻贴.app` and retains the NAS app identity. Quit an older copy before starting it. Windows runs `ClipDay.Cloud.exe`; closing the window leaves it in the tray. Android updates must preserve its package and signing identity. See [installation](docs/INSTALL.md).
 
-## Installation
+Standalone local v1.2.0 has a separate identity; **history import is not implemented**. Mode switching does not migrate or upload old history. Preserve old data; see [consolidation](docs/CONSOLIDATION.md).
 
-These steps describe existing release downloads. Current source builds `轻贴.app` on Mac and uses “轻贴 NAS 版” for Windows and Android display labels. The Windows executable remains `ClipDay.Cloud.exe`. Quit the old Mac copy before using the newly named copy; both retain the same app identity.
+Mac local history is not separately encrypted. Space keys use Keychain, Windows DPAPI or Android Keystore. Expiry cleanup requires running clients and reachable storage; snapshots, backups and external copies are outside the app's control. Mac is ad-hoc signed and not notarized; Windows is not Authenticode-signed. No auto-updater, per-device revocation, automatic key rotation, global recall, iOS/Linux/Intel Mac or native Windows ARM package is provided.
 
-- Mac: unzip and move `轻贴云版.app` to Applications. Default shortcut: Control + Option + Shift + V. This is separate from the local-only ClipDay app.
-- Windows: extract the entire ZIP and run `ClipDay.Cloud.exe`. Closing the window keeps the tray process running; use the tray menu to quit.
-- Android: install the APK using the phone's normal installation flow. Future updates must keep the same signing identity; do not uninstall first if you want to preserve local state.
+## Verification
 
-The Mac package is ad-hoc signed and not notarized. Windows has no Authenticode signature. Android uses a fixed release signing key. No development tools are needed to run the packages.
+Passed: 52 Mac base checks; 56 Swift image, 43 sync and 29 model checks; C# reliability/image/sync/pairing suites; Swift/C# text encryption interoperability; native pairing bridge; synthetic cloud-folder replicas. Android passed all 64 JVM tests, release lint with zero errors and six warnings, and APK signature verification matching the old certificate.
 
-## Scope and data
-
-Text only, at most 1 MiB per item, expiring after 24 hours. Cleanup requires an active client with NAS access and does not erase NAS snapshots or backups. Records are encrypted with AES-256-GCM. Space keys use platform protection; Mac's local history is not separately encrypted. See [data handling](docs/PRIVACY.md) and the [protocol](docs/CLOUD-PROTOCOL.md).
-
-There is no individual device revocation, automatic key rotation, global recall or auto-updater. No iOS, Linux, Intel Mac or native Windows ARM package is provided.
-
-Desktop functionality has been tried by the maintainer. Automated checks cover synchronization, pairing and cross-language interoperability. Android passed isolated Samba and Android 15 emulator journeys, including offline/restart recovery; physical-phone and personal-NAS acceptance is still pending. Other OS and NAS combinations are not exhaustively tested.
+Pending: Mac visual layout and actual direct paste, Windows UI/clipboard/DPAPI, Android physical-phone upgrades and URI grants, real NAS and provider-specific cross-device sync. Historical desktop/emulator results do not certify these new paths. Detailed evidence and commands are in [development](docs/DEVELOPMENT.md).
 
 ## Source
 
-Swift/SwiftUI on Mac, C#/WinForms on Windows, native Java/SMBJ on Android. See [development](docs/DEVELOPMENT.md). This repository hosts public source and downloadable releases. Android signed builds now run in GitHub Actions; build artifacts are validation previews, not automatic releases.
+Swift/SwiftUI, C#/WinForms and native Java/SMBJ. Android signed builds run in GitHub Actions; signing secrets are not in source. [Resume guide](docs/RESUME.md) · [MIT License](LICENSE) · [Third-party notices](licenses/THIRD-PARTY-NOTICES.txt) · [AppSweep](https://github.com/fgyg007/appsweep).
 
-[MIT License](LICENSE), with third-party notices retained. Related projects: [ClipDay](https://github.com/fgyg007/clipday) · [AppSweep](https://github.com/fgyg007/appsweep).
+Use synthetic content in bug reports. Do not upload clipboard contents, NAS credentials or pairing secrets.
 
-## Reliability improvements in current source
+Historical NAS files (Mac app `轻贴云版.app`; no new features):
 
-These changes are not included in the existing release downloads. Failed local captures remain retryable; unreadable individual Mac history entries do not abort the whole history load. A separate privacy pause blocks new capture and synchronization without deleting history or queues; sync-only pause still permits local recording. Connection checks guide path/read/write validation and create-versus-join setup. Local persistence and NAS upload are distinct states: the protocol has no receiver receipt, so upload does not mean another device received or pasted the text. Already-issued I/O may finish after pausing; pause cannot retract data. Existing expiry rules still apply. See [privacy](docs/PRIVACY.md) and [development](docs/DEVELOPMENT.md) for limitations.
+[Mac 0.1.1](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.1-macos-arm64.zip) · [Windows 0.1.3](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.3-windows-x64.zip) · [Android 0.1.0](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.0-android.apk) · [SHA256SUMS](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/SHA256SUMS.txt)

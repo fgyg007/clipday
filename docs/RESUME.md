@@ -6,9 +6,9 @@ updated: 2026-10-18
 
 ## 当前事实
 
-开发主仓库为 `fgyg007/clipday`。统一源码已于 2026-10-17 通过 PR #1 合入 `main`，基线提交 `7706baf`；旧 `clipday-cloud` 仓库、分支与发布保留。当前本机工作目录是 `dev/projects/clipday-unified`，分支 `codex/unified-validation`；旧 `mac-clipboard` 的未提交开发现场保留，不要整目录覆盖或重复合并。
+开发主仓库为 `fgyg007/clipday`。统一源码已于 2026-10-17 通过 PR #1 合入 `main`，基线提交 `7706baf`；旧 `clipday-cloud` 仓库、分支与发布保留。当前本机工作目录是 `dev/projects/clipday-unified`，本轮验证分支为 `codex/unified-validation`，合入后以 `main` 继续；旧 `mac-clipboard` 的未提交开发现场保留，不要整目录覆盖或重复合并。
 
-桌面统一入口支持仅本机、NAS、网盘文件夹，Android 当前仅支持 NAS。新增图片同步与可靠性改进已完成本轮 Mac 原生、Windows 交叉构建与 Android 云端 APK 构建，实际设备互通仍待验收。旧本地版历史导入尚未实现，模式切换不自动搬运历史。产品与数据边界见 [统一入口](../Desktop/README.md)、[合并说明](CONSOLIDATION.md)。部分合并说明记录的是合入前状态；当前 Git 状态以仓库为准。
+桌面统一入口支持仅本机、NAS、网盘文件夹，Android 当前仅支持 NAS。新增图片同步与可靠性改进已完成本轮 Mac 原生、Windows 交叉构建与 Android 云端 APK 构建，实际设备互通仍待验收。旧本地版历史导入尚未实现，模式切换不自动搬运历史。产品与数据边界见 [统一入口](../Desktop/README.md)、[合并说明](CONSOLIDATION.md)。历史验证按日期保留；当前 Git 状态以仓库为准。
 
 既有验证应区分版本：旧 NAS 预览曾完成核心测试、跨语言互通、隔离 Samba 与 Android 15 模拟器测试，维护者反馈桌面可用；不代表统一版或用户手机、真实 NAS 已验收。统一源码合入时记录了 64 项 JVM 测试和 25 组源码检查通过，Mac/Windows 原生构建及真实网盘互通仍待验证，详见 [开发说明](DEVELOPMENT.md)。
 
@@ -66,7 +66,7 @@ zsh scripts/build-windows.sh
 
 Mac 原生测试与完整构建现已通过，详见开发说明的 2026-10-18 记录。新版已安装并以仅本机、暂停记录启动，运行诊断确认窗口可见及快捷键已注册。下一步进行界面与真实直接粘贴验收（当前辅助功能权限未授权），随后在隔离环境验证实际双端同步；不把核心测试当成真实 NAS／网盘验收。启动参数只对本次进程生效，下次普通启动会使用原有保存设置。
 
-下次可以直接说：“继续轻贴统一版，从 docs/RESUME.md 接上，先检查工作区和已有验证结果，再继续 Mac 测试与编译。”
+下次可以直接说：“继续轻贴统一版，从 docs/RESUME.md 接上，先检查工作区和已有验证结果，再继续三端实机验收。”
 
 ## 不要做什么
 

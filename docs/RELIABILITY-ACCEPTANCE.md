@@ -34,4 +34,4 @@ Mac 的“本机历史已保存、待发队列写入失败”会在应用仍运�
 
 ## 交付边界
 
-这次不生成或发布新安装包，不修改用户 NAS，不部署、不合并分支。完整验收仍需要 macOS、Windows、Android 实机／模拟器及隔离 NAS；Linux 上的 Java 核心测试不能替代平台 UI、DPAPI、Keychain、Keystore 与真实 SMB 权限验证。
+2026-10-18 已生成三端验收构建并通过相关核心回归，尚未发布新 Release。本清单的真实设备与隔离 NAS 项目仍需执行；构建和核心测试不能替代平台 UI、DPAPI、Keychain、Keystore 与真实 SMB 权限验证。进度见[开发记录](DEVELOPMENT.md)。

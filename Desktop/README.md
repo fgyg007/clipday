@@ -1,6 +1,6 @@
-# 轻贴统一入口 · 0.2.0-dev
+# 轻贴统一入口 · 验收预览
 
-这是未发布、未通过原生编译与真机验收的集成源码，不是新安装包。Mac / Windows 在同一个轻贴入口中选择仅本机、NAS 或网盘文件夹；Android 当前仅支持 NAS。需要手机参与请选择 NAS；只用本机历史请选择仅本机；电脑间有现成双向云盘同步时可选择网盘文件夹。每次进程只启用一种模式。切换会停止记录及传输、保留原模式数据，按提示手动重启，不自动迁移或补传旧历史。
+2026-10-18 已完成 Mac 原生构建、Windows x64 交叉构建和 Android 云端签名 APK；尚未发布新 Release，实际设备互通仍待验收。构建版本与获取方式见[版本记录](../docs/RELEASE-NOTES.md)。Mac / Windows 在同一个轻贴入口中选择仅本机、NAS 或网盘文件夹；Android 当前仅支持 NAS。需要手机参与请选择 NAS；只用本机历史请选择仅本机；电脑间有现成双向云盘同步时可选择网盘文件夹。每次进程只启用一种模式。切换会停止记录及传输、保留原模式数据，按提示手动重启，不自动迁移或补传旧历史。
 
 网盘文件夹模式复用已登录的云盘客户端维护的本地双向同步文件夹，不调用百度、Microsoft 或 Apple API，不包含 OAuth、服务器、账号或令牌。界面列出百度网盘、OneDrive、iCloud 和其他同步文件夹，只用于提示配置来源，不代表已经验证各家或所有版本都兼容。百度 API 实验已暂停，不在本产品构建中。
 
@@ -30,4 +30,4 @@ OneDrive 官方说明：[Files On-Demand](https://support.microsoft.com/en-us/on
 Mac：`scripts/build.sh` / `scripts/build-cloud.sh`，保留 `io.jlmac.ClipDay.Cloud` 身份。
 Windows：`Windows/ClipDay.Cloud` / `scripts/build-windows.sh`，保留 `ClipDay.Cloud.exe`。独立云盘构建不再作为发布目标。旧本地版 `io.jlmac.ClipDay` 的历史尚未导入，见 [迁移与保留计划](../docs/CONSOLIDATION.md)。
 
-本次不运行用户电脑、不安装SDK、不构建或发布安装包。C#/Swift原生测试源码已经加入，但在缺少.NET/Xcode的环境中不能声称通过。源代码契约/语法检查不替代原生编译、剪贴板、钥匙串/DPAPI、云盘客户端、跨机延迟与升级验收。
+Swift/C# 合成网盘文件夹测试与桌面构建已通过；Mac 已本机安装并暂停启动。真实云盘客户端、跨机延迟、Windows UI/DPAPI、系统剪贴板与升级仍待验收，详见[开发记录](../docs/DEVELOPMENT.md)。

@@ -1,56 +1,62 @@
-# 从源码开发
+# 从源码开发与验证
 
-> 当前集成源码统一显示为“轻贴”，桌面可选仅本机、NAS、网盘文件夹；Android仅支持NAS。下文原发布包名称/版本是历史安装信息，未发布新包。完整模式引导与未完成的历史迁移见 [统一说明](../Desktop/README.md) 和 [合并计划](CONSOLIDATION.md)。
+主仓库为 `fgyg007/clipday`，桌面统一仅本机/NAS/网盘文件夹模式，Android 仅 NAS。2026-10-18 已完成 Mac 原生、Windows x64 交叉、Android Actions 签名构建；真实设备验收仍有待办，详见下方当日记录。公开历史包与当前构建分开列在[版本记录](RELEASE-NOTES.md)。
 
+## 工程入口
 
-本仓库是轻贴 NAS 版（原显示名“轻贴云版”）的独立公开源码与下载入口。Mac 的通用组件来自 [ClipDay](https://github.com/fgyg007/clipday)，保留 MIT 许可。Android 已配置 GitHub Actions 签名构建（见下方工作流说明），源码不包含维护者签名私钥。
-
-当前源码仅更改 NAS 客户端的显示名称，未发布新安装包，也未改动现有版本号。现有 Release 的 Mac 仍为 `轻贴云版.app`。保留所有 bundle/package/assembly、可执行文件、互斥锁、存储、钥匙串与图片 provider 标识，避免把改名变成数据迁移。NAS 协议、路径以及 Android NAS 支持不变。
-
-可在无原生工具链环境运行 `python3 scripts/test-nas-branding.py` 检查显示名称与兼容标识；它不替代平台编译、资源布局和升级验收。
-
-## 工程
-
-| 目录 | 内容 |
+| 路径 | 内容 |
 | --- | --- |
-| `Sources/` | Mac Swift／SwiftUI、系统剪贴板与 NAS 同步 |
-| `Windows/ClipDay.Cloud/` | Windows WinForms 客户端 |
-| `Windows/ClipDay.Sync/` | C# 同步与 SRP 配对核心 |
-| `Windows/ClipDay.Pairing/` | Mac 随包携带的 Native AOT 配对组件 |
-| `Android/` | Java 安卓客户端、SMB 适配、测试与 Gradle wrapper |
-| `Tests/`、`scripts/` | 测试、互通 fixture、构建脚本 |
+| `Sources/` | Mac Swift/SwiftUI、历史、NAS/网盘同步 |
+| `Windows/ClipDay.Cloud/` | 统一 Windows 客户端，保留旧 NAS 身份 |
+| `Windows/ClipDay.Sync/` | C# 同步、图片及配对核心 |
+| `Windows/ClipDay.Pairing/` | Mac 随包的 Native AOT 配对组件 |
+| `Android/` | Java/SMBJ、Gradle wrapper、核心及设备测试 |
+| `Tests/`、`scripts/` | 合成 fixture、测试、构建与配对 UI 预览 |
+| `Legacy/local-v1.2.0/` | 独立本地版历史文档和脚本的原始副本，不覆盖修改 |
 
-## Mac 和 Windows
+## Mac 与 Windows 构建
 
-Mac 需要 Apple Silicon Mac、Xcode Command Line Tools、Python 3、ripgrep 和 .NET 10 SDK。Windows 版本可在 Mac 使用 .NET 10 SDK 交叉构建；运行时已经随便携包附带。
+Mac 需要 Apple Silicon、Xcode Command Line Tools、Python 3、ripgrep 和 .NET 10 SDK。Windows x64 可通过现有 .NET SDK 交叉构建；WinForms 界面、剪贴板与 DPAPI 需要 Windows 实机验收。
 
 ```sh
-git clone https://github.com/fgyg007/clipday-cloud.git
-cd clipday-cloud
+git clone https://github.com/fgyg007/clipday.git
+cd clipday
+# dotnet 未在 PATH 时，先 export CLIPDAY_DOTNET=/absolute/path/to/dotnet
+# C# 图片路径保护拒绝符号链接，Mac 使用项目内隔离临时根目录
+mkdir -p build/test-tmp
+export TMPDIR="$PWD/build/test-tmp"
 zsh scripts/test.sh
 zsh scripts/test-cloud.sh
-zsh scripts/build-cloud.sh
+zsh scripts/test-drive-native.sh
+zsh scripts/build.sh
 zsh scripts/test-pairing-bridge.sh
 zsh scripts/build-windows.sh
 ```
 
-若 `dotnet` 不在 PATH，设置 `CLIPDAY_DOTNET` 为其绝对路径。产物分别为 `build/轻贴.app` 与 `build/windows-x64/ClipDay.Cloud.exe`。Windows 发布脚本禁用调试符号，避免在下载包中携带开发机 PDB 路径。Mac 编译采用 ad-hoc 签名。
+产物为 `build/轻贴.app` 和 `build/windows-x64/ClipDay.Cloud.exe`。Mac 使用 ad-hoc 签名；Windows 自包含运行时，无需单独安装 .NET，构建参数关闭 PDB。这些命令不会自动发布 Release 或安装应用。配对桥接测试依赖先构建 Mac 组件。
 
-测试使用合成文本、公开 fixture 密钥、临时目录和独立命名剪贴板；不要把 fixture 脚本指向真实 NAS 同步目录。`test-pairing-bridge.sh` 需先生成 Mac 配对组件。
+配对 UI 辅助预览只用合成数字、不连接 NAS：
 
-## Android
+```sh
+zsh scripts/build-pairing-preview.sh
+./build/pairing-preview
+```
 
-构建需要 JDK 17、Android SDK 35／Build Tools 35.0.0，仓库 wrapper 使用 Gradle 8.11.1，AGP 8.9.2。这些工具可在选定的本地或云端构建环境提供，安装使用 APK 不需要它们。详见 [Android README](../Android/README.md)。
+当前默认 `build.sh` 构建统一版。`build-drive.sh` 只是兼容转发，独立 Windows Drive 产品已停用；不要把它们当另一个发布目标。`package.sh` 保留未完成正式发布验收的阻止提示；Windows/Android 本轮文件是验收产物，未创建 Release。
 
-## 贡献与验收
+## Android 云端构建
 
-改动后运行受影响平台的测试。纯文档或发布元数据不需要重新构建所有客户端。桌面单元测试不能验证真实 Windows 托盘、DPAPI、手机厂商系统或实际 NAS 权限，需按变更范围补充人工验收。
+当前采用 GitHub Actions，参考 [工作流](../.github/workflows/build-android.yml)。云端 JDK 17、SDK/Build Tools 35、Gradle 8.11.1、AGP 8.9.2；不需要在 Mac 安装安卓工具链。执行核心测试、lint、签名构建及 apksigner 校验，APK/清单和报告作为 artifact 提供，详见下方云端记录与 [Android README](../Android/README.md)。
 
-首次公开发布沿用已验证的 Mac 0.1.1 和 Android 0.1.0 包；Windows 0.1.3 使用相同应用源码重新打包以移除调试路径。发布记录和校验清单见 [发布说明](RELEASE-NOTES.md)。测试结果不构成所有系统或 NAS 的兼容保证。
+签名密钥只能放私有配置/GitHub Secrets。升级复用轻贴原密钥与包名、递增 versionCode；不使用其他 App 的密钥，不先卸载旧包。
 
-## 本轮可靠性改动的验收
+## 验证范围
 
-详见 [可靠性验收清单](RELIABILITY-ACCEPTANCE.md)。新增源码不等于已发布安装包；没有变更版本号或签名，也未新增自动发布工作流。平台测试未执行时必须明确记录，不能用静态检查替代编译通过或实机验收。
+测试使用合成文字/图片、公开 fixture 密钥、独立剪贴板和临时目录，不指向个人 NAS 或历史。原生编译、核心逻辑测试、模拟器记录与真实设备验收分别报告。纯说明更新只做文档/契约检查，不重复构建三端。设备清单见[图片验收](IMAGE-ACCEPTANCE.md)、[可靠性验收](RELIABILITY-ACCEPTANCE.md)。
+
+## 历史验证记录（2026-10-17）
+
+以下记录保留当时环境与限制；当时“未编译”的状态已由后面的 2026-10-18 构建记录更新，不是当前构建结论。
 
 ### 2026-10-17 云端验证记录
 
@@ -89,9 +95,9 @@ Python 检查使用公开合成图片与固定测试密钥，验证认证加密�
 
 2026-10-17：4组 NAS 显示名称和身份兼容性 Python 检查通过；原61项 JVM 回归通过，更名后的 Android Java 编译通过，仅有3项既有过时API警告。Mac/Windows 原生编译运行、Android实际UI布局及升级路径仍未验收；未构建或发布安装包。
 
-## 独立云盘版源码（未发布）
+## 历史：独立云盘源码阶段（已统一入口）
 
-见 [Desktop/README.md](../Desktop/README.md)。构建目标为 `scripts/build-drive.sh` / `Windows/ClipDay.Drive`；不使用百度 API 实验或授权服务器。`Desktop/products.json` 区分产品身份、开发版本、平台和未验证的提供方。
+当前入口以 [Desktop/README.md](../Desktop/README.md) 为准，独立 Windows Drive 目标已停用。以下为统一前的验证范围记录；`Desktop/products.json` 提供当前身份、构建状态和未验证的网盘提供方。
 
 源码契约检查：`scripts/test-drive-contracts.py`、`scripts/test-drive-mac-source.py`、`scripts/test-windows-drive-source.py`。Windows 脚本在没有 tree-sitter 时会明确跳过解析检查；不能把跳过计为通过。`scripts/test-nas-branding.py`继续守护 NAS 身份与旧下载。
 
@@ -111,7 +117,7 @@ Python 检查使用公开合成图片与固定测试密钥，验证认证加密�
 
 本机 C# 测试需使用无符号链接的临时根目录。在仓库根目录先执行 `mkdir -p build/test-tmp` 和 `export TMPDIR="$PWD/build/test-tmp"`，然后执行上述脚本；未放宽 C# 的路径保护。工具不在 PATH 时通过 `CLIPDAY_DOTNET` 指定已有 SDK。
 
-已将构建的 `轻贴.app` 安装至用户 Applications，并使用 `-selectedSyncMode local -paused YES` 启动。应用自带诊断确认窗口可见、快捷键已注册、暂停记录且没有采集错误；启动参数不改变下次启动所用的原有持久配置。UI 自动化连接超时，视觉布局尚未验收；辅助功能权限未授权，真实直接粘贴待验证。Windows 客户端构建/UI、Android APK/设备、真实 NAS/云盘跨设备互通及旧本地历史导入未在本轮验收，未发布新安装包。
+已将构建的 `轻贴.app` 安装至用户 Applications，并使用 `-selectedSyncMode local -paused YES` 启动。应用自带诊断确认窗口可见、快捷键已注册、暂停记录且没有采集错误；启动参数不改变下次启动所用的原有持久配置。UI 自动化连接超时，视觉布局尚未验收；辅助功能权限未授权，真实直接粘贴待验证。此处记录的是 Mac 阶段；随后完成的 Windows/Android 构建见下节。Windows UI、手机设备、真实 NAS/云盘跨设备互通及旧本地历史导入仍未验收，未发布新 Release。
 
 
 ## Android GitHub Actions 构建

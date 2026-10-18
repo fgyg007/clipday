@@ -2,9 +2,9 @@
 
 ## 当前代码检查点，不是完成发布或删除许可
 
-目标仓库是 `fgyg007/clipday` 的独立集成分支，main 不变。来源 `fgyg007/clipday-cloud` 的 PR、分支、发布和用户数据全部保留。没有执行任何仓库删除、归档、改名、合并、安装或发布。
+主仓库为 `fgyg007/clipday`，统一源码已于 2026-10-17 经 PR #1 合入 main。2026-10-18 的原生修复、云端构建和说明更新见 PR #2。来源 `fgyg007/clipday-cloud` 的分支、发布和旧源码保留，未删除或归档仓库。Mac 已本机安装验证；Windows/Android 已生成验收包，尚未发布新 Release。
 
-独立本地版审计基线为 `8f9ac029804bce3cd31e6cc3a5c57d3ce71409ca`（1.2.0）。原 Paste.swift / Tests.swift 功能基础保留，其他 Mac 组件在其上增加同步/模式逻辑。原 CHANGELOG、E2E/PasteFixture、build-e2e 入口保留。原中英文介绍、安装/开发/发布文档和原构建/打包脚本的精确副本保存在 `Legacy/local-v1.2.0`，避免旧发布信息丢失。旧本地版下载仍在 [1.2.0 发布](https://github.com/fgyg007/clipday/releases/tag/v1.2.0)，NAS 预览包仍在 [云版历史发布](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1)。没有把旧包标成新统一版。
+独立本地版审计基线为 `8f9ac029804bce3cd31e6cc3a5c57d3ce71409ca`（1.2.0）。原 Paste.swift / Tests.swift 功能基础保留，其他 Mac 组件在其上增加同步/模式逻辑。原 CHANGELOG 的精确副本归档至 `Legacy/local-v1.2.0/CHANGELOG.md`；E2E/PasteFixture、build-e2e 入口保留，根 CHANGELOG 继续记录新版本。原中英文介绍、安装/开发/发布文档和原构建/打包脚本的精确副本保存在 `Legacy/local-v1.2.0`，避免旧发布信息丢失。旧本地版下载仍在 [1.2.0 发布](https://github.com/fgyg007/clipday/releases/tag/v1.2.0)，NAS 预览包仍在 [云版历史发布](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1)。没有把旧包标成新统一版。
 
 新的默认 build.sh 指向统一 Mac 构建；原 packager 已保留但当前打包入口明确阻止未经验收的统一发布。原 E2E 测试的 bundle/UI 假设属于旧本地版，不能直接当成统一版真机验收通过。
 
@@ -40,4 +40,4 @@
 
 2026-10-17：64项 JVM 测试通过（含3项安全帮助模板测试）；Android Java 应用按固定框架依赖编译通过，仅3项既有警告。25组 Python 源码/元数据/保留检查通过；22个C#文件、21个Swift文件通过语法解析，12个工程/资源XML可解析；公开图片向量与Java产生密文的独立Python解密校验通过。专项静态审查未发现仍未修复的阻断问题。
 
-这些不是原生编译或运行测试。Mac/Windows构建、系统剪贴板、真实钥匙串/DPAPI、三端NAS、各云盘双机互通、旧本地历史导入与新旧安装升级均未验收。本次没有安装工具链或访问用户电脑、NAS和云盘账号。
+以上是 2026-10-17 的历史源码检查记录。2026-10-18 已完成 Mac 原生构建与启动、Windows 交叉构建、Android 云端签名 APK 及相关核心回归，详见[开发记录](DEVELOPMENT.md)。真实三端 NAS、网盘双机、系统权限/粘贴、手机升级与旧本地历史导入仍未验收，不据此删除旧数据。

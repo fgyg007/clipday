@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Static NAS branding/compatibility guard; no native build, network or device I/O."""
 from pathlib import Path
+import json
 import plistlib
 import re
 import unittest
@@ -8,6 +9,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = "轻贴"
+BUILDS = json.loads((ROOT / "Desktop/products.json").read_text())["platformBuilds"]
 ANDROID = "Android/app/src/main/"
 JAVA = ANDROID + "java/io/jlmac/clipday/android/"
 
@@ -48,7 +50,7 @@ class NasBrandingTests(unittest.TestCase):
         self.assertIn('Product.StorageName + "." + Environment.UserName', program)
         project = ET.fromstring(source("Windows/ClipDay.Cloud/ClipDay.Cloud.csproj"))
         self.assertEqual(project.findtext(".//AssemblyName"), "ClipDay.Cloud")
-        self.assertEqual(project.findtext(".//Version"), "0.1.3")
+        self.assertEqual(project.findtext(".//Version"), BUILDS["windows"]["version"])
 
     def test_android_display_and_identity(self):
         ns = "{http://schemas.android.com/apk/res/android}"
@@ -63,7 +65,7 @@ class NasBrandingTests(unittest.TestCase):
         self.assertIn("分享 → " + NAME, activity)
         self.assertIn(NAME + " · NAS 模式 · 未发布源码", activity)
         gradle = source("Android/app/build.gradle")
-        for field in ["namespace 'io.jlmac.clipday.android'", "applicationId 'io.jlmac.clipday.android'", "versionCode 1", "versionName '0.1.0'", "keyAlias 'clipday'"]:
+        for field in ["namespace 'io.jlmac.clipday.android'", "applicationId 'io.jlmac.clipday.android'", f"versionCode {BUILDS['android']['versionCode']}", f"versionName '{BUILDS['android']['version']}'", "keyAlias 'clipday'"]:
             self.assertIn(field, gradle)
         self.assertIn('ALIAS = "clipday-local-v1"', source(JAVA + "Vault.java"))
         self.assertIn('this(context, "vault.enc")', source(JAVA + "Vault.java"))

@@ -8,7 +8,7 @@ updated: 2026-10-18
 
 开发主仓库为 `fgyg007/clipday`。统一源码已于 2026-10-17 通过 PR #1 合入 `main`，基线提交 `7706baf`；旧 `clipday-cloud` 仓库、分支与发布保留。当前本机工作目录是 `dev/projects/clipday-unified`，分支 `codex/unified-validation`；旧 `mac-clipboard` 的未提交开发现场保留，不要整目录覆盖或重复合并。
 
-桌面统一入口支持仅本机、NAS、网盘文件夹，Android 当前仅支持 NAS。新增图片同步与可靠性改进仍需原生和实际设备验收。旧本地版历史导入尚未实现，模式切换不自动搬运历史。产品与数据边界见 [统一入口](../Desktop/README.md)、[合并说明](CONSOLIDATION.md)。部分合并说明记录的是合入前状态；当前 Git 状态以仓库为准。
+桌面统一入口支持仅本机、NAS、网盘文件夹，Android 当前仅支持 NAS。新增图片同步与可靠性改进已完成本轮 Mac 原生、Windows 交叉构建与 Android 云端 APK 构建，实际设备互通仍待验收。旧本地版历史导入尚未实现，模式切换不自动搬运历史。产品与数据边界见 [统一入口](../Desktop/README.md)、[合并说明](CONSOLIDATION.md)。部分合并说明记录的是合入前状态；当前 Git 状态以仓库为准。
 
 既有验证应区分版本：旧 NAS 预览曾完成核心测试、跨语言互通、隔离 Samba 与 Android 15 模拟器测试，维护者反馈桌面可用；不代表统一版或用户手机、真实 NAS 已验收。统一源码合入时记录了 64 项 JVM 测试和 25 组源码检查通过，Mac/Windows 原生构建及真实网盘互通仍待验证，详见 [开发说明](DEVELOPMENT.md)。
 
@@ -74,3 +74,8 @@ Mac 原生测试与完整构建现已通过，详见开发说明的 2026-10-18 �
 - 不把真实剪贴板、NAS 地址和密码、配对秘密、运行数据写进 Git 或测试日志。
 - 不用源码检查或旧版验收替代新版原生、实际设备与真实网盘验收。
 - 不因源码已合并就删除、归档旧仓库或分支；提交、推送与发布按当前用户授权范围执行。
+
+
+## Windows 与 Android 预览包
+
+2026-10-18 已生成 `0.2.0-preview.1`：Windows 自包含 x64 ZIP 在 `dist/`；Android APK 在 `dist/android/`。安卓沿用原签名，版本码 2，64 项 JVM 测试与 release lint 通过（6 项警告、无错误），源码与构建记录见开发说明。Android 已按用户选择使用 GitHub Actions；同一任务不用重复询问构建方式，不在 Mac 恢复安卓工具链。重新构建按 `.github/workflows/build-android.yml`，Secrets 只保留在 GitHub/私有配置，不能写入源码。当前 Actions 产物仍属验收预览，不是正式发布；Windows UI、手机覆盖升级和真实 NAS 互通待用户设备验证。

@@ -3,7 +3,7 @@
 > 当前集成源码统一显示为“轻贴”，桌面可选仅本机、NAS、网盘文件夹；Android仅支持NAS。下文原发布包名称/版本是历史安装信息，未发布新包。完整模式引导与未完成的历史迁移见 [统一说明](../Desktop/README.md) 和 [合并计划](CONSOLIDATION.md)。
 
 
-本仓库是轻贴 NAS 版（原显示名“轻贴云版”）的独立公开源码与下载入口。Mac 的通用组件来自 [ClipDay](https://github.com/fgyg007/clipday)，保留 MIT 许可。没有配置自动云端打包，也不包含维护者签名私钥。
+本仓库是轻贴 NAS 版（原显示名“轻贴云版”）的独立公开源码与下载入口。Mac 的通用组件来自 [ClipDay](https://github.com/fgyg007/clipday)，保留 MIT 许可。Android 已配置 GitHub Actions 签名构建（见下方工作流说明），源码不包含维护者签名私钥。
 
 当前源码仅更改 NAS 客户端的显示名称，未发布新安装包，也未改动现有版本号。现有 Release 的 Mac 仍为 `轻贴云版.app`。保留所有 bundle/package/assembly、可执行文件、互斥锁、存储、钥匙串与图片 provider 标识，避免把改名变成数据迁移。NAS 协议、路径以及 Android NAS 支持不变。
 
@@ -112,3 +112,18 @@ Python 检查使用公开合成图片与固定测试密钥，验证认证加密�
 本机 C# 测试需使用无符号链接的临时根目录。在仓库根目录先执行 `mkdir -p build/test-tmp` 和 `export TMPDIR="$PWD/build/test-tmp"`，然后执行上述脚本；未放宽 C# 的路径保护。工具不在 PATH 时通过 `CLIPDAY_DOTNET` 指定已有 SDK。
 
 已将构建的 `轻贴.app` 安装至用户 Applications，并使用 `-selectedSyncMode local -paused YES` 启动。应用自带诊断确认窗口可见、快捷键已注册、暂停记录且没有采集错误；启动参数不改变下次启动所用的原有持久配置。UI 自动化连接超时，视觉布局尚未验收；辅助功能权限未授权，真实直接粘贴待验证。Windows 客户端构建/UI、Android APK/设备、真实 NAS/云盘跨设备互通及旧本地历史导入未在本轮验收，未发布新安装包。
+
+
+## Android GitHub Actions 构建
+
+工作流为 `.github/workflows/build-android.yml`，沿用独立云端构建方法，原生 Java 工程不需要 Node/Capacitor。使用 JDK 17、SDK/Build Tools 35 和仓库 Gradle wrapper，执行核心测试、release lint、签名 APK 构建及 apksigner 校验。源码改动在 main 或当前验证分支触发，支持手动触发；不在 PR 事件中解密签名密钥。
+
+仓库 Secrets 名称为 `CLIPDAY_ANDROID_KEYSTORE_BASE64` 与 `CLIPDAY_ANDROID_STORE_PASSWORD`。必须使用轻贴已有正式密钥，不能使用其他 App 的密钥。密钥仅还原至 runner 临时目录，不作为 artifact 上传，最后清理。APK 与 SHA256SUMS artifact 保留 30 天，测试报告单独上传。本次预览版本为 `0.2.0-preview.1`，Android `versionCode=2`，包名与签名身份保持不变。Actions artifact 是验收产物，不自动创建 Release。
+
+
+### 2026-10-18 Windows / Android 构建结果
+
+- Windows `0.2.0-preview.1`：使用现有 .NET 10 SDK 成功交叉发布 win-x64 自包含应用，便携 ZIP 约 46.4 MiB，包含程序及第三方许可，无 PDB。ZIP 完整性和 SHA-256 已检查；尚未在 Windows 真机验证托盘、剪贴板及 DPAPI。
+- Android `0.2.0-preview.1` / versionCode 2：[GitHub Actions 构建 39104194060](https://github.com/fgyg007/clipday/actions/runs/39104194060) 成功，构建源码提交 `b6949d9`。64 项 JVM 测试全部通过，无失败或跳过；release lint 无错误，有 6 项警告（目标 API、测试依赖更新与字符串拼接）。
+- APK 约 3.1 MiB，APK v2 签名验证成功。下载后的校验值与 artifact 清单一致，签名证书 SHA-256 与旧 0.1.0 APK 完全相同，保留覆盖升级所需的签名与包名。未在手机验证实际升级、URI 图片授权或 NAS 互通；安装更新不要先卸载旧版。
+- 本机没有安装 Android SDK/JDK/Gradle。产物位于 `dist/ClipDay-0.2.0-preview.1-windows-x64.zip` 与 `dist/android/ClipDay-0.2.0-preview.1-android.apk`，校验清单随包保留。未创建新的 GitHub Release。

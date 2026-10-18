@@ -89,7 +89,7 @@ Mac 包采用 ad-hoc 签名，未经过 Apple Developer ID 签名或公证；Win
 
 ## 开发与开源
 
-Mac 使用 Swift／SwiftUI，Windows 使用 C#／WinForms，安卓使用 Java 原生界面与 SMBJ。完整源码、测试、协议和构建说明见[开发文档](docs/DEVELOPMENT.md)及[同步协议](docs/CLOUD-PROTOCOL.md)。本仓库提供公开源码和版本下载，没有配置 GitHub Actions 打包工作流。
+Mac 使用 Swift／SwiftUI，Windows 使用 C#／WinForms，安卓使用 Java 原生界面与 SMBJ。完整源码、测试、协议和构建说明见[开发文档](docs/DEVELOPMENT.md)及[同步协议](docs/CLOUD-PROTOCOL.md)。本仓库提供公开源码和版本下载；Android 的 GitHub Actions 签名构建见[开发文档](docs/DEVELOPMENT.md)，构建产物不等于正式 Release。
 
 [MIT License](LICENSE)。第三方组件保留各自许可证。欢迎反馈可复现问题，请勿上传真实剪贴板、NAS 密码或配对码。
 

@@ -57,7 +57,7 @@ Desktop functionality has been tried by the maintainer. Automated checks cover s
 
 ## Source
 
-Swift/SwiftUI on Mac, C#/WinForms on Windows, native Java/SMBJ on Android. See [development](docs/DEVELOPMENT.md). This repository hosts public source and downloadable releases; it has no automated build workflow.
+Swift/SwiftUI on Mac, C#/WinForms on Windows, native Java/SMBJ on Android. See [development](docs/DEVELOPMENT.md). This repository hosts public source and downloadable releases. Android signed builds now run in GitHub Actions; build artifacts are validation previews, not automatic releases.
 
 [MIT License](LICENSE), with third-party notices retained. Related projects: [ClipDay](https://github.com/fgyg007/clipday) · [AppSweep](https://github.com/fgyg007/appsweep).
 

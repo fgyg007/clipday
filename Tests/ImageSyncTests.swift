@@ -147,6 +147,12 @@ import CryptoKit
         try fm.createSymbolicLink(at: symlink, withDestinationURL: remoteFirst)
         try rejects("symlink files are never read") { _ = try ImageWire.read(symlink, maximum: ImageWire.chunkSize + 28) }
         try fm.removeItem(at: symlink)
+        let linkedDirectory = root.appendingPathComponent("linked-images")
+        try fm.createSymbolicLink(at: linkedDirectory, withDestinationURL: a.recordsURL)
+        try rejects("user directory symlinks remain rejected despite system alias support") {
+            try ImageWire.checkDirectory(linkedDirectory)
+        }
+        try fm.removeItem(at: linkedDirectory)
         let pending = try a.enqueue(png, now: now + 1700)
         try rejects("privacy pause prevents all subsequent transfer steps") { _ = try a.poll(now: now + 1800, allowed: { false }) }
         try check(fm.fileExists(atPath: a.outbox.appendingPathComponent(pending.id + ".img").path), "privacy pause retains durable image queue")

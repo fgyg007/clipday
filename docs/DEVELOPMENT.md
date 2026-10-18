@@ -96,3 +96,19 @@ Python 检查使用公开合成图片与固定测试密钥，验证认证加密�
 源码契约检查：`scripts/test-drive-contracts.py`、`scripts/test-drive-mac-source.py`、`scripts/test-windows-drive-source.py`。Windows 脚本在没有 tree-sitter 时会明确跳过解析检查；不能把跳过计为通过。`scripts/test-nas-branding.py`继续守护 NAS 身份与旧下载。
 
 原生合成回归入口：`scripts/test-drive-native.sh`；仅测试临时本地复制目录，无真实网盘和剪贴板。测试覆盖独立命名空间、秘密配对前缀隔离、空间证明延迟、部分文字补齐、延迟接收与去重；C#另外覆盖图片清单先到/分块后到。本次缺少.NET/Xcode，未执行此入口，也未执行原生应用编译或真机验收。
+
+
+## 2026-10-18 Mac 本机验证
+
+统一版在 Apple Silicon / macOS 上使用已有 Swift 与 .NET 10 工具链完成以下检查：
+
+- `test.sh`：52 项本机历史、采集、粘贴决策与快捷键检查通过。
+- `test-cloud.sh`：56 项 Swift 图片协议/队列、43 项文字同步、29 项模型检查通过；C# 可靠性 35 项、图片 57 项、文字同步 22 项、短码配对 19 项以及配对回归通过；Swift/C# 双向文字密文互通通过。
+- `test-drive-native.sh`：Swift 合成文件夹复制测试及 C# 31 项测试通过，不涉及真实云盘账户。
+- `build.sh`：完整 Mac 应用与 Native AOT 配对组件构建成功，`codesign --verify --deep --strict` 通过（ad-hoc 签名）。`test-pairing-bridge.sh` 四项真实组件桥接检查通过。
+- 修复图片路径检查误拒 macOS `/var`、`/tmp` 系统固定别名，继续拒绝用户目录符号链接；新增回归断言。修复图片轮询在共享目录已存在时抛错。补齐配对桥接测试对图片模块的编译依赖。
+- 恢复合成配对 UI 预览及仓库续接说明。预览目标单独编译通过。
+
+本机 C# 测试需使用无符号链接的临时根目录。在仓库根目录先执行 `mkdir -p build/test-tmp` 和 `export TMPDIR="$PWD/build/test-tmp"`，然后执行上述脚本；未放宽 C# 的路径保护。工具不在 PATH 时通过 `CLIPDAY_DOTNET` 指定已有 SDK。
+
+已将构建的 `轻贴.app` 安装至用户 Applications，并使用 `-selectedSyncMode local -paused YES` 启动。应用自带诊断确认窗口可见、快捷键已注册、暂停记录且没有采集错误；启动参数不改变下次启动所用的原有持久配置。UI 自动化连接超时，视觉布局尚未验收；辅助功能权限未授权，真实直接粘贴待验证。Windows 客户端构建/UI、Android APK/设备、真实 NAS/云盘跨设备互通及旧本地历史导入未在本轮验收，未发布新安装包。

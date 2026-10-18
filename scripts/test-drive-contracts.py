@@ -25,6 +25,6 @@ class DriveContracts(unittest.TestCase):
         self.assertIn('cloudDrive: true',swift)
     def test_delivery_limits_documented(self):
         doc=read('Desktop/README.md')
-        for value in ['不代表已上传','版本历史','未通过原生编译','不是即时通道','双向同步','Mac / Windows']:
+        for value in ['不代表已上传','版本历史','实际设备互通仍待验收','不是即时通道','双向同步','Mac / Windows']:
             self.assertIn(value,doc)
 if __name__=='__main__': unittest.main()

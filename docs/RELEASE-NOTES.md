@@ -1,4 +1,23 @@
-# 轻贴云版 · 首次 NAS 预览发布
+# 版本与构建记录
+
+## 2026-10-18：统一版验收构建（尚未发布 Release）
+
+Mac 已完成原生构建与本机安装；Windows 与 Android 预览版本为 `0.2.0-preview.1`。这是一轮构建和回归验证，不代表 Windows/手机或真实同步环境已验收，也没有替换旧 Release。
+
+| 平台 | 产物 | 状态 |
+| --- | --- | --- |
+| Mac | `轻贴.app`；包版本 0.1.1、开发标记 0.2.0-dev | 原生构建及 ad-hoc 签名检查通过，本机启动诊断通过；未上传新归档 |
+| Windows | `ClipDay-0.2.0-preview.1-windows-x64.zip` | 自包含 x64，约 46.4 MiB；已本地生成和校验，无 PDB，尚未上传 Release |
+| Android | `ClipDay-0.2.0-preview.1-android.apk` | versionCode 2，约 3.1 MiB；云端签名构建成功，证书与旧 APK 相同 |
+
+Android [构建记录与 artifact](https://github.com/fgyg007/clipday/actions/runs/39104194060) 对应源码 `b6949d9`，需 GitHub 登录，保留 30 天。下载 APK artifact 后校验随附 SHA256SUMS，覆盖安装，不要先卸载。
+
+本轮内容：桌面统一三种模式、加密图片同步、隐私暂停与失败重试、设置引导；恢复配对预览与续接说明。Mac 修复系统临时路径别名误拒、图片目录重复创建失败和配对桥接测试漏编图片模块。
+
+验证：Mac/Swift/C# 核心回归、文字密文互通、原生配对桥接和合成网盘测试通过；Android 64 项 JVM 测试通过，lint 无错误、6 项警告。详见[完整构建记录](DEVELOPMENT.md)。仍待 Mac 视觉/直接粘贴、Windows UI/DPAPI、手机升级/图片 URI、真实 NAS/网盘跨设备验收；旧本地历史导入尚未实现。
+
+## 历史：旧 NAS 预览发布
+
 
 Release：`v0.1.0-preview.1`。这是本次多平台发布集合的标签，各客户端保留自己的版本号。
 

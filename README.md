@@ -1,98 +1,74 @@
-# 轻贴 · ClipDay（统一入口开发中）
+# 轻贴 · ClipDay
 
-**复制在这台，粘贴到另一台。桌面端按场景选择仅本机、NAS 或网盘同步文件夹；Android 当前仅支持 NAS。**
+**保存一天的剪贴板历史，也让文字和图片在自己的设备间流转。**
 
-[English](README.en.md) · [下载安装包](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1) · [安装与配对](docs/INSTALL.md) · [反馈问题](https://github.com/fgyg007/clipday-cloud/issues)
+[English](README.en.md) · [安装与配对](docs/INSTALL.md) · [版本与构建记录](docs/RELEASE-NOTES.md) · [反馈问题](https://github.com/fgyg007/clipday/issues)
 
-下方已发布安装包为 **NAS 预览版**：设备需能访问同一份 NAS 共享，安卓首版面向同一 Wi-Fi。无需注册轻贴账号，没有开发者中转服务器；暂不提供移动网络接入配置。
+桌面端在同一个“轻贴”里选择**仅本机、NAS、网盘同步文件夹**；Android 当前仅支持 NAS。无需轻贴账号，没有开发者中转服务器。应用界面为简体中文。
 
-当前未发布源码正在统一为一个“轻贴”入口，保留原 NAS 应用身份与历史，新增模式选择和设置引导。旧本地版 `fgyg007/clipday` 的功能与原始测试资产已经比对保留，但历史迁移尚未实现或验收，不能把当前源码视为已完整替换所有旧版本。
+## 当前进度与下载
 
-- 只在这台电脑用：选择仅本机，不连接 NAS 或网盘。
-- 需要 Android 参与：选择 NAS；电脑先创建空间，手机加入。
-- 只在电脑间同步且已有双向云盘客户端：选择网盘文件夹，并保证文件完整保留本机。百度网盘、OneDrive、iCloud 均尚未真机验收，不代表所有客户端、套餐或虚拟挂载均适用。
+截至 **2026-10-18**，统一版已完成 Mac 原生构建、Windows x64 交叉构建和 Android GitHub Actions 签名构建，正在进行设备验收。**尚未发布新的 GitHub Release，编译通过不代表三端真实互通已验收。**
 
-详见[模式选择、隐私与验收边界](Desktop/README.md)。模式切换保留旧队列和数据，不自动迁移、合并或同时发送；需要按界面提示重启后生效。设置帮助可生成不含路径、地址、账号、密钥或剪贴板内容的 AI 提示，由你预览并自行复制，不会直接发送给第三方。
+| 平台 | 当前构建 | 获取方式与要求 |
+| --- | --- | --- |
+| macOS | 统一版开发构建；包内版本仍为 0.1.1，开发标记 0.2.0-dev | 已本机编译安装；公开新包尚未上传。源码构建见[开发说明](docs/DEVELOPMENT.md)。Apple Silicon、macOS 14+ |
+| Windows | 0.2.0-preview.1 | 已生成约 46.4 MiB 的自包含 x64 ZIP，尚未上传 Release；解压运行 `ClipDay.Cloud.exe`，无需另装 .NET |
+| Android | 0.2.0-preview.1，versionCode 2 | [云端构建与 APK artifact](https://github.com/fgyg007/clipday/actions/runs/39104194060)，约 3.1 MiB；Android 8.0+ |
 
-下面下载仍是旧“轻贴云版”的 NAS 预览安装包，不含尚未发布的统一引导和网盘模式。未删除任何仓库、版本或用户数据。
+下载 Android artifact 需登录 GitHub，在构建页面 Artifacts 中选择 `clipday-android-b6949d9dd606e0961b44cac5c2b04aa69ca33fc5`，解压后有 APK 与 `SHA256SUMS.txt`。artifact 保留 30 天，过期后需重新构建。签名与旧 APK 相同，**覆盖安装，不要先卸载**；实际手机升级仍待验收。
 
-## 下载
+历史公开包继续保留：[独立本地版 v1.2.0](https://github.com/fgyg007/clipday/releases/tag/v1.2.0) · [旧 NAS 预览包](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1)。后者为 Mac 0.1.1 / Windows 0.1.3 / Android 0.1.0，仍只同步文字，不含统一引导、网盘模式和新增图片同步。GitHub 的 Source code ZIP/TAR 是源码，不是安装包。
 
-| 平台 | 当前版本 | 下载 | 要求 |
-| --- | --- | --- | --- |
-| macOS | 0.1.1 | [Mac ZIP](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.1-macos-arm64.zip) · 约 2.7 MiB | Apple Silicon（M 系列），macOS 14+ |
-| Windows | 0.1.3 | [Windows ZIP](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.3-windows-x64.zip) | x64，便携版，随包附带 .NET 运行环境 |
-| Android | 0.1.0 | [安卓 APK](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.0-android.apk) · 约 3.1 MiB | Android 8.0+，同一 Wi-Fi 下可访问 NAS |
+## 按场景选择
 
-[SHA-256 校验文件](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/SHA256SUMS.txt)。Release 中自动生成的 **Source code** 是源码，不是安装包。三个客户端的版本号各自维护，可以加入同一个同步空间。
+| 场景 | 模式 | 说明 |
+| --- | --- | --- |
+| 只找回这台电脑复制过的内容 | 仅本机 | 不连接 NAS 或网盘 |
+| Mac、Windows、Android 之间同步 | NAS | 各设备访问同一个共享目录，首台电脑创建空间，其他设备输入 6 位码加入 |
+| 电脑之间已有双向云盘客户端 | 网盘文件夹 | 复用完整保留在本机的同步文件夹；不调用网盘 API，不需要轻贴服务器 |
 
-## 它能做什么
+网盘文件夹模式已实现并通过合成目录测试；百度网盘、OneDrive、iCloud 的真实双机互通仍未验收，不能把单向备份、虚拟盘或未下载的占位文件视为可用同步目录。详见[模式设置](Desktop/README.md)。模式切换需要重启，各模式的历史和队列隔离，不自动迁移或补传旧历史。
 
-| 功能 | 行为 |
-| --- | --- |
-| 电脑间文字同步 | Mac、Windows 在连接正常时同步新复制的文字，另一端可直接粘贴 |
-| 安卓主动收发 | 手机选中文字 → 分享到轻贴 → 发送；打开轻贴接收，点记录复制 |
-| 6 位数字配对 | 随机数字、2 分钟倒计时；成功或到期后失效，无需复制长密钥 |
-| 多设备加入 | 第三台及后续设备可通过新的配对码加入同一空间 |
-| 自填 NAS 路径 | 电脑填各自的共享路径；安卓填写 NAS 地址、共享名、子目录和账号 |
-| 24 小时文字历史 | 搜索、查看和复制历史；离线内容进入队列，恢复连接后重试 |
-| 加密同步文件 | NAS 中的文字记录使用 AES-256-GCM 加密 |
-| 后台桌面客户端 | 关闭 Windows 窗口后留在托盘；Mac 使用菜单栏和快捷键 |
+## 功能
 
-同一时间在多个设备复制、首次打开或离线补回的内容会保守地进入历史，避免旧内容覆盖正在使用的剪贴板。图片和文件暂不跨设备同步。
+- **24 小时历史**：文字和图片按原始产生时间到期，支持历史查找与复制；Mac 支持导出 TXT/PNG、快捷键及授权后的直接粘贴。
+- **文字与图片同步**：桌面自动捕获；Android 文字通过主动分享/输入发送，图片仅在应用聚焦且获得系统 URI 读取授权时采集。文件、文件夹和压缩包不传输。
+- **加密与配对**：同步记录使用 AES-256-GCM；NAS 使用 6 位数字、2 分钟有效期配对，网盘模式使用完整秘密配对信息，两种配对格式不能混用。
+- **离线与失败恢复**：持久队列、重试、去重、损坏历史隔离；首次连接和离线追赶保守进入历史，避免旧内容覆盖当前剪贴板。
+- **隐私暂停**：停止新采集、发送和接收；“只暂停同步”仍允许本机记录。暂停不清空旧数据，也不能撤回已经完成的传输。
+- **设置帮助**：路径读写诊断、创建/加入引导，以及可预览、手动复制的脱敏 AI 求助说明；不会直接发送给第三方。
 
-## 自动图片同步开发分支
+图片上限 20 MiB、最长边 8192、总像素不超过 16,777,216，具体平台存储边界见[图片协议](docs/IMAGE-PROTOCOL.md)。“已写入同步目录”不代表对端已收到，另一端是否收到需实际核实。
 
-图片功能在独立开发分支中实现，**现有 Release 安装包仍仅同步文字**。目标是在电脑复制图片后自动加密同步，不要求每次点击发送；Android 仅在系统允许的聚焦前台读取剪贴板，不能承诺后台采集。图片限制20 MiB，文件传输暂不加入。
+## 开始使用
 
-协议、隐私边界与原生验收要求见 [图片协议](docs/IMAGE-PROTOCOL.md) 和 [图片验收清单](docs/IMAGE-ACCEPTANCE.md)。不把 NAS 上传成功当作另一端已收到。
+1. 桌面选择适用模式。需要手机参与时选择 NAS，先确认共享目录可读写。
+2. 第一台电脑创建空间，其他设备加入同一个空间。Android 填 NAS 地址、共享名和子目录，不填电脑盘符或 Mac 挂载路径。
+3. 用无敏感内容的短句和小图片测试双向收发，再检查暂停、重启与离线恢复。
 
-## 当前源码中的可靠性改进
+Mac 新应用名为 `轻贴.app`，沿用旧 NAS 身份；运行前退出旧副本。Windows 关闭窗口后仍留在托盘，托盘菜单“退出”才停止运行。完整步骤见[安装说明](docs/INSTALL.md)。
 
-以下为待验证、待发布的源码改进，**上方现有安装包不包含本次改动**：
+**旧独立本地版 v1.2.0 的历史导入尚未实现**，不会因统一仓库而自动迁移。保留原数据与备份，详见[数据保留与迁移](docs/CONSOLIDATION.md)。
 
-- 保存失败保留重试机会，避免一次磁盘错误导致该次复制永久漏记；个别不可读历史不会让全部历史加载中止。
-- 独立的“隐私暂停”阻止新的记录与同步；“暂停同步”仍保留本机记录，两者不混淆，暂停不删除旧记录。
-- 首次连接按路径检查、读写诊断、创建／加入引导；明确区分本机保存与 NAS 上传，接收端状态没有回执时显示未知。
+## 已验证与待验证
 
-平台编译与实际设备验收边界见 [开发说明](docs/DEVELOPMENT.md)。
+已通过：Mac 基础 52 项、Swift 图片 56 项、同步 43 项、模型 29 项；C# 同步/图片/可靠性/配对回归；Swift/C# 文字密文互通；原生配对桥接；合成网盘文件夹测试。Android 64 项 JVM 测试全部通过，release lint 无错误、6 项警告，APK 签名与旧包一致。完整证据见[开发记录](docs/DEVELOPMENT.md)。
 
-## 三步开始
+待验证：Mac 窗口布局和真实直接粘贴（本轮辅助功能未授权）、Windows 真机托盘/剪贴板/DPAPI、Android 手机覆盖升级与图片 URI、真实 NAS 及各网盘双机互通。旧版曾有桌面试用和模拟器记录，不替代新版验收。
 
-1. **准备共享文件夹。** Mac 和 Windows 分别确认能读写同一个 NAS 文件夹；路径可以不同，例如 Mac 的 `/Volumes/共享/轻贴` 和 Windows 的 `\\NAS\共享\轻贴`。
-2. **在一台电脑创建同步空间。** 打开轻贴 NAS 版（现有发布包显示“轻贴云版”），填入目录，点击“创建同步空间…”。已有空间时，点击“配对另一台电脑…”显示新的 6 位数字。
-3. **其他设备输入数字加入。** 电脑填写对应共享路径，安卓填写 NAS 连接资料，在倒计时结束前输入配对码。不要为每台设备分别创建空间。
+## 数据与边界
 
-首次配对后先用一小段测试文字检查双向收发。详细步骤见[安装与配对](docs/INSTALL.md)和[安卓使用说明](Android/README.md)。
+Mac 本机历史未额外加密；空间密钥由 Mac 钥匙串、Windows DPAPI、Android Keystore 保护。未标记的敏感文字仍可能被记录。到期清理需要客户端运行且存储可达，不能删除 NAS/网盘备份、快照或其他应用的副本。Android 不后台监听剪贴板，不提供移动网络接入配置。详见[隐私说明](docs/PRIVACY.md)。
 
-## 安装与升级
-
-以下安装步骤对应现有 Release。自行构建当前源码时，Mac 产物为“轻贴.app”，Windows 窗口／托盘和 Android 应用／分享入口显示“轻贴”；Windows 启动文件仍为 `ClipDay.Cloud.exe`。Mac 更换显示名称不代表新应用身份：先退出旧副本，避免同时运行新旧名称的副本。
-
-- **Mac：**解压后把“轻贴云版.app”放入 Applications。快捷键为 `⌃⌥⇧V`（Control + Option + Shift + V）。它与[轻贴本地版](https://github.com/fgyg007/clipday)使用独立设置和历史，可同时保留。
-- **Windows：**解压整个文件夹，运行 `ClipDay.Cloud.exe`。双击托盘图标打开历史，右键“退出”才停止运行。没有看到图标时检查托盘折叠区。
-- **安卓：**下载 APK 后按手机提示安装。更新时覆盖安装即可，不要先卸载；卸载会删除本机配对、历史和待发送数据。
-
-Mac 包采用 ad-hoc 签名，未经过 Apple Developer ID 签名或公证；Windows EXE 未做 Authenticode 签名，首次运行可能遇到系统提示。安卓 APK 使用固定签名，普通使用无需安装任何开发工具。请先核对下载来源与校验值，参见[安装说明](docs/INSTALL.md)。
-
-## 已发布预览包的数据与边界
-
-- 当前只同步纯文字，每条最多 1 MiB；每条从产生时保留 24 小时。到期清理需要客户端运行并可访问 NAS；NAS 快照、回收站与备份不受应用控制。
-- NAS 保存加密记录。空间密钥分别由 Mac 钥匙串、Windows DPAPI、Android Keystore 保护；**Mac 本机历史未额外加密**。详见[数据说明](docs/PRIVACY.md)。
-- 账号、共享目录、NAS 权限由用户自己管理，不必发给维护者。同步依赖网络、共享权限、设备时钟和休眠状态。
-- 安卓不监听后台剪贴板，也不在后台持续接收；需要主动分享，或打开轻贴查看。没有输入法或辅助功能服务。
-- 暂无账号系统、设备撤销、自动密钥轮换、全设备撤回、自动更新或 Windows 安装器；未提供 iOS、Linux、Intel Mac 或 Windows ARM 原生包。
-
-## 已发布预览包的既有验证记录（不代表新源码验收）
-
-维护者已在 Mac／Windows 实际试用，并反馈桌面版可用。核心同步、短码配对和跨语言文件互通经过自动化验证；安卓经过隔离 Samba 和 Android 15 模拟器的配对、分享、复制、断线及重启恢复测试。**安卓用户真机与实际 NAS 尚待验收**，也未覆盖所有系统版本和 NAS 型号。
+Mac 为 ad-hoc 签名，未做 Developer ID 公证；Windows 未做 Authenticode 签名。暂无自动更新、设备撤销、密钥自动轮换或全设备撤回，也未提供 iOS、Linux、Intel Mac 或 Windows ARM 原生包。
 
 ## 开发与开源
 
-Mac 使用 Swift／SwiftUI，Windows 使用 C#／WinForms，安卓使用 Java 原生界面与 SMBJ。完整源码、测试、协议和构建说明见[开发文档](docs/DEVELOPMENT.md)及[同步协议](docs/CLOUD-PROTOCOL.md)。本仓库提供公开源码和版本下载，没有配置 GitHub Actions 打包工作流。
+Mac 使用 Swift/SwiftUI，Windows 使用 C#/WinForms，Android 使用 Java/SMBJ。阅读[开发说明](docs/DEVELOPMENT.md)或[续接入口](docs/RESUME.md)。Android 已配置 GitHub Actions 签名构建，源码不包含签名私钥或用户数据。
 
-[MIT License](LICENSE)。第三方组件保留各自许可证。欢迎反馈可复现问题，请勿上传真实剪贴板、NAS 密码或配对码。
+[MIT License](LICENSE) · [第三方声明](licenses/THIRD-PARTY-NOTICES.txt) · 配套工具：[轻卸 AppSweep](https://github.com/fgyg007/appsweep)。反馈时请使用合成内容，不公开真实剪贴板、NAS 密码或配对秘密。
 
-配套工具：[轻贴 · 本地剪贴板历史](https://github.com/fgyg007/clipday) · [轻卸 · AppSweep](https://github.com/fgyg007/appsweep)。
+旧 NAS 包直链（Mac 应用名 `轻贴云版.app`，不含新功能）：
 
-统一开发线的实际限制、旧版本资产和未实现的自愿历史导入见[合并与迁移计划](docs/CONSOLIDATION.md)。请勿据此删除旧安装或旧仓库。
+[Mac 0.1.1](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.1-macos-arm64.zip) · [Windows 0.1.3](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.3-windows-x64.zip) · [Android 0.1.0](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/ClipDay-Cloud-0.1.0-android.apk) · [SHA256SUMS](https://github.com/fgyg007/clipday-cloud/releases/download/v0.1.0-preview.1/SHA256SUMS.txt)

@@ -1,9 +1,8 @@
-# 轻贴 NAS 版 · NAS 预览版
+# 旧 NAS 预览版使用记录
 
-> 当前集成源码统一显示为“轻贴”，桌面可选仅本机、NAS、网盘文件夹；Android仅支持NAS。下文原发布包名称/版本是历史安装信息，未发布新包。完整模式引导与未完成的历史迁移见 [统一说明](../Desktop/README.md) 和 [合并计划](CONSOLIDATION.md)。
+本文保留旧发布包 Mac 0.1.1 / Windows 0.1.3 / Android 0.1.0 的文字同步行为和验收记录。**以下版本及“轻贴云版”名称属于历史信息。**
 
-
-当前源码使用“轻贴 NAS 版”显示名，尚未发布。下文描述现有发布包（Mac 0.1.1 / Windows 0.1.3 / Android 0.1.0），其旧显示名称和文件名保持不变。当前源码构建的 Mac 为 `轻贴 NAS 版.app`，Windows 仍运行 `ClipDay.Cloud.exe`；应用标识、存储、配对与 NAS 协议不变，Android 继续支持 NAS。
+当前统一入口显示“轻贴”，Mac 为 `轻贴.app`，Windows 仍为 `ClipDay.Cloud.exe`，Android 包名不变。三端新构建结果、图片功能与升级方式请以[当前首页](../README.md)、[安装说明](INSTALL.md)及[开发记录](DEVELOPMENT.md)为准。旧包不自动获得新功能。
 
 NAS 版提供 Mac 与 Windows 之间的加密纯文字同步。无需轻贴账号，也不连接开发者的服务器。两台电脑必须能读写同一个 NAS 文件夹。
 

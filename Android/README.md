@@ -1,37 +1,38 @@
 # 轻贴 Android · 当前仅支持 NAS
 
-桌面统一入口请选择 NAS 模式与手机配合。Android 暂不支持云盘同步文件夹；不会因电脑选择网盘模式而自动获得手机云盘同步能力。当前显示名称更新和设置帮助尚未发布，旧下载仍显示“轻贴云版”。
+当前验收包为 **0.2.0-preview.1 / versionCode 2**，应用及分享入口显示“轻贴”。[GitHub Actions 构建](https://github.com/fgyg007/clipday/actions/runs/39104194060)已完成 64 项 JVM 测试、release lint、APK 打包及签名验证；lint 无错误、6 项警告。需登录 GitHub 下载 APK artifact，保留 30 天；尚未创建新 Release。
 
+包名 `io.jlmac.clipday.android` 和原签名证书不变，覆盖安装以保留 Keystore、历史与队列，不要先卸载。手机升级和实际 NAS/图片 URI 验收仍待进行。旧公开 0.1.0 包仅同步文字，不能当作新图片功能的验收结果。
 
-当前源码的应用与分享入口显示“轻贴”，尚未发布。现有 0.1.0 下载包仍显示“轻贴”；下文发布包步骤沿用旧名称。包名 `io.jlmac.clipday.android`、版本、签名配置、私有存储、Keystore 和图片 provider 标识不变；不要卸载旧包。NAS 版继续支持手机加入，改名不改变同步协议或 NAS 路径。
-
-面向 Android 8.0 及以上的原生应用。与 Mac 0.1.1／Windows 0.1.3 共用现有同步空间；已发布 0.1.0 仅支持文字主动收发。本分支新增图片自动同步源代码，尚未发布新版安装包；仅在同一 Wi-Fi 下访问 NAS，不提供移动网络配置、后台剪贴板监听、输入法或辅助功能服务。
+Android 8.0+。桌面请选择 NAS 模式与手机配合；Android 不支持网盘文件夹，不提供后台剪贴板监听、输入法、辅助功能服务或移动网络配置。文字主动分享/输入发送，新增图片路径只在前台焦点与 URI 权限允许时采集。
 
 ## 使用
 
-1. 安装 `dist/ClipDay-Cloud-0.1.0-android.apk`，手机与 NAS 连在可互通的同一个局域网。
+1. 安装 `ClipDay-0.2.0-preview.1-android.apk`，手机与 NAS 连在可互通的同一个局域网。
 2. 填写 NAS IP／主机名、SMB 共享名称、共享内子文件夹、NAS 用户名与密码。比如电脑用的是 `\\NAS\share\selfclip`，手机共享名称填 `share`，子文件夹填 `selfclip`；Windows 的 `Z:` 和 Mac 的 `/Volumes/…` 不能直接当手机路径。支持 `DOMAIN\user`；非默认端口可填 `host:port`。
 3. 在已配对的电脑上显示新的 6 位配对码，手机输入并连接。不要另建同步空间。配对成功后收起设置；后续改 NAS 地址但保持同一空间，可留空配对码，点“保存并连接”。
 4. 手机发送：其他 App 选文字 → 分享 → 轻贴 → 确认发送；也可以粘贴或输入到轻贴后发送。
-5. 手机接收：打开轻贴自动刷新，点历史中的“复制”，再到目标 App 粘贴。搜索和“查看”可查找、展开长文字。收到内容不自动修改手机剪贴板。
+5. 手机接收：打开轻贴自动刷新，点历史中的“复制”，再到目标 App 粘贴。搜索和“查看”可查找、展开长文字。收到文字不自动修改手机剪贴板；图片的新鲜度与自动应用条件见下文。
 
 没有轻贴账号；NAS 账号只用于访问用户自己的共享。程序只操作所选目录下的 `ClipDaySync`。共享需允许读取、创建、重命名与删除文件。
 
 ## 实现与边界
 
 - Java 原生 Activity；SMBJ 0.14.0 直接访问 SMB2／SMB3，使用 Bouncy Castle 1.79 的 SRP-6a，与电脑 `Pairing-v2` 协议互通。安卓只加入现有空间，不生成配对邀请。
-- AES-256-GCM 记录格式与桌面一致；来源、设备 ID、序号、观察到的其他设备序号、去重与 24 小时到期保持一致。只同步纯文字，每条最多 1 MiB。
+- AES-256-GCM 记录格式与桌面一致；来源、设备 ID、序号、观察到的其他设备序号、去重与 24 小时到期保持一致。文字每条最多 1 MiB；图片使用独立协议与限额，见下文。
 - Android Keystore 加密一份原子本机状态文件，包含 NAS 凭据、空间密钥、历史、序号、去重与待发送队列。禁用应用备份，状态存于 `noBackupFilesDir`；卸载会失去本机密钥及待发送数据，重新安装需再配对。
 - 发送按钮先保存本机队列，再访问 NAS。网络失败可重试；重复写同一记录 ID 不产生重复历史。等待超过 24 小时的记录会到期，不再发送。
 - 打开应用时约 3 秒刷新，网络失败约 10 秒重试；离开页面停止周期刷新。正在执行的一次发送／配对可能继续到完成或超时，不能承诺后台持续传输。
 - 手机历史上限 1,000 条／约 16 MiB，列表一次显示最近 100 条，搜索覆盖保留的历史；待发送最多 200 条／约 16 MiB。到期清理在应用下次运行、访问 NAS 时执行，并非后台定时删除。敏感草稿仅在进程内存中，不写系统 saved-state bundle。
-- 已发布 0.1.0 没有图片；本分支新增图片源代码见下。仍没有单设备撤销、密钥轮换、文件、推送、自动更新或公网 NAS 配置。不修改电脑端的已配对状态。
+- 已发布 0.1.0 没有图片；本次验收 APK 包含图片实现，见下文。仍没有单设备撤销、密钥轮换、文件、推送、自动更新或公网 NAS 配置。不修改电脑端的已配对状态。
 
 ## 构建
 
-JDK 17、Android SDK 35／Build Tools 35.0.0；Gradle wrapper 固定 8.11.1，AGP 8.9.2。可在自选的本地或云端环境构建；本仓库未配置 Actions 工作流，不含维护者签名私钥。
+JDK 17、Android SDK 35／Build Tools 35.0.0；Gradle wrapper 固定 8.11.1，AGP 8.9.2。本项目当前采用 GitHub Actions 云端构建，本机无需安装安卓工具链；源码不含维护者签名私钥。
 
-设置好 `JAVA_HOME` 和 `ANDROID_HOME` 后：
+工作流为 [build-android.yml](../.github/workflows/build-android.yml)，可从 Actions 手动运行，main 与当前验证分支的相关改动也会触发。使用轻贴自己的 `CLIPDAY_ANDROID_KEYSTORE_BASE64` / `CLIPDAY_ANDROID_STORE_PASSWORD` Secrets，执行 `:core:test :app:lintRelease :app:assembleRelease`，校验后上传 APK、SHA256SUMS 与测试报告。不使用其他 App 的包名或密钥，不自动发布 Release。
+
+仅在另行选定本地构建且已有环境时，设置 `JAVA_HOME` 和 `ANDROID_HOME` 后执行：
 
 ```sh
 cd Android
@@ -42,7 +43,7 @@ Debug APK 在 `app/build/outputs/apk/debug/`。若自行构建 release，提供�
 
 自行签名的 APK 无法覆盖维护者发布的包。维护者后续版本必须保持包名与签名一致，并递增 `versionCode`；不要为更新而先卸载。历史本地辅助脚本 `scripts/build-android.sh` 支持自定义工具路径，但不是安装 APK 的前提。开源许可在 APK 的 `assets/open_source.txt` 中。
 
-## 验证
+## 验证入口与历史设备测试
 
 - `:core:test`：加密认证、Unicode、离线队列与重启、去重、过期、未来时间、损坏文件重试、因果序号、本地保存失败、缺失 NAS、大小／路径限制、带队列切换空间保护。
 - `scripts/test-android-interop.py`：公开固定 fixture，Java 短码配对、错误码拒绝、Swift／C# 记录读取，以及手机记录由两端解密。需先编译 `Tests/AndroidInteropTests.swift` 到 `build/android-interop`，并准备 `build/pairing-mac/ClipDayPair` 原生组件。
@@ -51,7 +52,7 @@ Debug APK 在 `app/build/outputs/apk/debug/`。若自行构建 release，提供�
 
 真实手机的安装限制、系统分享菜单及实际 NAS 权限仍待验收，模拟器结果不代表所有机型／HyperOS 版本已通过。
 
-## 本轮可靠性改进（源代码，尚未发布安装包）
+## 本次预览包的可靠性改进
 
 - 本机加密保存与 NAS 网络工作使用独立队列。刷新、配对或 NAS 超时期间，已配对手机仍可提交新文字；只有保存成功才清空输入框。网络忙不再悄悄丢弃发送操作。此处“保存”仍是用户主动分享／输入后确认，不新增后台剪贴板采集。
 - 每条上传成功后单独持久化确认，后续上传、目录读取或接收失败不会回滚已确认项目，也不会覆盖同步期间新加入的本机队列。结果显示上传失败、目录读取失败、损坏／校验失败、设备时间异常和过期清理失败，并保留可重试状态。
@@ -69,7 +70,7 @@ KEEP_TEST_ARTIFACTS=1 scripts/test-android-core-jvm.sh --compile-app
 ```
 
 
-## 图片自动同步（本分支源代码，未发布 APK）
+## 图片自动同步（已构建，真机待验收）
 
 - 不把“手动分享”当自动同步：本分支注册系统剪贴板变更监听器，只在轻贴 Activity 位于前台且获得焦点时读取有临时读取权限的单张 content URI。其他应用复制图片后返回轻贴，自动读取、加密保存并上传，不需要“发送”按钮；PNG/JPEG 静态图片会在内存规范化为 PNG。无 content URI、未授予读取权限、动画、文件 URI、超限或不支持的格式会拒绝，不使用辅助功能、ADB、隐形窗口或输入法绕过系统限制。
 - Android 10 及以上非默认输入法只能在获得焦点时读取剪贴板，因此不能承诺手机后台复制图片立即同步。Android 官方说明：[焦点限制](https://developer.android.com/about/versions/10/privacy/changes#clipboard-data)、[URI 剪贴板内容](https://developer.android.com/develop/ui/views/touch-and-input/copy-paste)。图片内容接收仍随前台约 3 秒轮询，离开页面不承诺持续传输。
@@ -80,4 +81,4 @@ KEEP_TEST_ARTIFACTS=1 scripts/test-android-core-jvm.sh --compile-app
 - 只清理已认证过期清单及其严格派生块名，不操作其他文件。清单发布前中断可能在 NAS 留下无清单的加密孤块；现有 Store 没有可靠修改时间接口，当前不猜测其年龄或删除其他设备的活动上传，因此这类孤块暂需 NAS 管理员清理。NAS 快照/备份不保证删除。应用运行时和再次连通时才做到期清理，不保证后台定时擦除。
 - JVM 测试包括固定跨语言加密向量、非法 JSON/PNG/尺寸、认证/AAD/SHA、分块边界、重启队列、清单最后发布、缺块/损坏重试、暂停晚到 I/O、原始到期、容量、路径、初次/连续/多来源剪贴板候选规则。备用脚本会执行 ImageWireTest 和 ImageEngineTest，CLIPDAY_IMAGE_VECTOR_OUT 可选择导出仅含公开测试数据的 Java 随机 nonce 密文供独立互通验证。
 
-本分支目前只做 JVM/Java 编译级验证。未执行 Gradle 资源打包、Lint、新 APK、Android 模拟器/真机、原生剪贴板 URI 授权和真实 SMB/NAS 端到端验收；上方旧版 JourneyTest 结果不代表新增图片路径已通过。
+2026-10-18 已在 GitHub Actions 完成 Gradle 资源编译、release lint、签名 APK 和 64 项核心测试；APK 证书与旧包一致。新版 Android 模拟器/真机、应用间剪贴板 URI 授权及真实 SMB/NAS 端到端仍未验收；上方旧版 JourneyTest 记录不代表新增图片路径已通过。

@@ -213,13 +213,26 @@ enum ImageWire {
         return data
     }
     static func checkDirectory(_ directory: URL) throws {
-        var path = directory.standardizedFileURL
-        while path.path != "/" {
-            let v = try path.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
-            guard v.isDirectory == true, v.isSymbolicLink != true else { throw SyncFailure.invalid }
-            path.deleteLastPathComponent()
+        // macOS Foundation may shorten /private/var to the system /var alias,
+        // even for a resolved temporary URL. Expand only known system aliases;
+        // all user-controlled path components must still be actual directories.
+        var path = directory.path
+        for alias in ["/var", "/tmp"] {
+            if (path == alias || path.hasPrefix(alias + "/")),
+               let target = try? FileManager.default.destinationOfSymbolicLink(atPath: alias),
+               ["private" + alias, "/private" + alias].contains(target) {
+                path = "/private" + path
+                break
+            }
+        }
+        while path != "/" {
+            var info = stat()
+            guard lstat(path, &info) == 0,
+                  (info.st_mode & mode_t(S_IFMT)) == mode_t(S_IFDIR) else { throw SyncFailure.invalid }
+            path = (path as NSString).deletingLastPathComponent
         }
     }
+
     static func write(_ data: Data, to file: URL, privateFile: Bool) throws {
         try checkDirectory(file.deletingLastPathComponent())
         if let v = try? file.resourceValues(forKeys: [.isSymbolicLinkKey]), v.isSymbolicLink == true { throw SyncFailure.invalid }
@@ -418,7 +431,12 @@ final class ImageFolderSync {
         try ImageWire.checkDirectory(root)
         try FolderSync.verify(root: root, pair: pair)
         try check()
-        try fm.createDirectory(at: recordsURL, withIntermediateDirectories: false)
+        do { try fm.createDirectory(at: recordsURL, withIntermediateDirectories: false) }
+        catch {
+            // Another client or an earlier poll may already have created it.
+            // Accept only a real directory; never recreate a missing NAS parent.
+            try ImageWire.checkDirectory(recordsURL)
+        }
         try ImageWire.checkDirectory(recordsURL)
         confirmedIntents = confirmedIntents.filter { $0.value > now }
         try saveConfirmations()

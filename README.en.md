@@ -14,7 +14,9 @@ One desktop app offers local-only, NAS and cloud-synced-folder modes. Android su
 | --- | --- | --- |
 | macOS | [Mac ZIP](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-macos-arm64.zip) | Apple Silicon, macOS 14+; bundle retains 0.1.1 / 0.2.0-dev |
 | Windows | [Windows ZIP](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-windows-x64.zip) | Self-contained x64; run ClipDay/ClipDay.Cloud.exe |
-| Android | [APK](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-android.apk) | Android 8.0+, NAS only; versionCode 2 |
+| Android | [APK](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.2/ClipDay-0.2.0-preview.2-android.apk) | Android 8.0+, NAS only; 0.2.0-preview.2, versionCode 3 |
+
+Android [0.2.0-preview.2](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.2) fixes missing NAS test/pairing feedback; [Android checksums](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.2/SHA256SUMS.txt). Mac/Windows remain on preview.1.
 
 [SHA-256 checksums](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/SHA256SUMS.txt). Android preserves the previous signing certificate: update in place without uninstalling. Release assets are not subject to the Actions artifact retention period. Physical-phone upgrade testing remains pending.
 

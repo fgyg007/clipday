@@ -4,6 +4,8 @@
 
 2026-10-21 已发布[统一版 v0.2.0-preview.1](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.1)，在 Release 的 Assets 中下载 Mac ZIP、Windows ZIP 或 Android APK，并核对 SHA256SUMS.txt。三端已完成构建，真实设备与同步互通仍待验收；旧 NAS Release 不包含统一版新增功能。
 
+Android 请使用修复版 [0.2.0-preview.2](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.2)（versionCode 3），覆盖安装保留数据。测试和配对进度会显示在按钮下方；输入网页链接、缺少配对码或暂停状态时会提示原因。测试成功只验证目录权限，不等于配对成功。
+
 ## Mac
 
 1. Apple Silicon、macOS 14+。取得新构建后，将 `轻贴.app` 放入 Applications 或 `~/Applications`；源码构建见[开发说明](DEVELOPMENT.md)。

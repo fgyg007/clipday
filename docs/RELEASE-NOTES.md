@@ -1,5 +1,15 @@
 # 版本与构建记录
 
+## 2026-10-21：Android 连接反馈修复 v0.2.0-preview.2
+
+[Android APK 与校验文件](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.2)；Mac/Windows 仍使用 preview.1。
+
+- 修复 NAS 测试/配对结果只出现在长表单顶部、会被自动同步覆盖的问题；新增按钮下方独立结果区，并在点击后自动滚动到结果。
+- 执行中显示按钮进度并避免重复提交；暂停、初始化和忙碌状态提供明确说明。
+- 在联网前校验地址与配对码，拒绝 HTTPS 网页和 QuickConnect 地址；域名必须可直连 SMB。区分域名解析、连接超时、端口不可达和登录权限错误。
+- Android 版本 0.2.0-preview.2，versionCode 3；沿用原包名与签名，覆盖安装，不先卸载。
+- 自动化验证不替代用户手机与实际 NAS 验收；此版本仍为预览版。
+
 ## 2026-10-21：统一版预览发布 v0.2.0-preview.1
 
 [下载三端预览包与 SHA256SUMS.txt](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.1)。

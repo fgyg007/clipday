@@ -8,15 +8,15 @@
 
 ## 当前进度与下载
 
-截至 **2026-10-18**，统一版已完成 Mac 原生构建、Windows x64 交叉构建和 Android GitHub Actions 签名构建，正在进行设备验收。**尚未发布新的 GitHub Release，编译通过不代表三端真实互通已验收。**
+**2026-10-21 已发布 [统一版 v0.2.0-preview.1](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.1)**，提供三端下载。这是预览版，已完成构建与核心回归，真实设备及跨设备互通仍待验收。
 
-| 平台 | 当前构建 | 获取方式与要求 |
+| 平台 | 下载 | 要求与版本 |
 | --- | --- | --- |
-| macOS | 统一版开发构建；包内版本仍为 0.1.1，开发标记 0.2.0-dev | 已本机编译安装；公开新包尚未上传。源码构建见[开发说明](docs/DEVELOPMENT.md)。Apple Silicon、macOS 14+ |
-| Windows | 0.2.0-preview.1 | 已生成约 46.4 MiB 的自包含 x64 ZIP，尚未上传 Release；解压运行 `ClipDay.Cloud.exe`，无需另装 .NET |
-| Android | 0.2.0-preview.1，versionCode 2 | [云端构建与 APK artifact](https://github.com/fgyg007/clipday/actions/runs/39104194060)，约 3.1 MiB；Android 8.0+ |
+| macOS | [下载 Mac ZIP](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-macos-arm64.zip) | Apple Silicon、macOS 14+；解压后安装轻贴.app。包内版本保留 0.1.1 / 0.2.0-dev |
+| Windows | [下载 Windows ZIP](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-windows-x64.zip) | x64，自带 .NET；解压运行 ClipDay/ClipDay.Cloud.exe |
+| Android | [下载 APK](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-android.apk) | Android 8.0+；0.2.0-preview.1、versionCode 2，仅支持 NAS |
 
-下载 Android artifact 需登录 GitHub，在构建页面 Artifacts 中选择 `clipday-android-b6949d9dd606e0961b44cac5c2b04aa69ca33fc5`，解压后有 APK 与 `SHA256SUMS.txt`。artifact 保留 30 天，过期后需重新构建。签名与旧 APK 相同，**覆盖安装，不要先卸载**；实际手机升级仍待验收。
+[SHA-256 校验文件](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/SHA256SUMS.txt)。Android 签名与旧 APK 相同，覆盖安装，不要先卸载。Release 附件不受 Actions artifact 的 30 天保留期限制。实际手机升级仍待验收。
 
 历史公开包继续保留：[独立本地版 v1.2.0](https://github.com/fgyg007/clipday/releases/tag/v1.2.0) · [旧 NAS 预览包](https://github.com/fgyg007/clipday-cloud/releases/tag/v0.1.0-preview.1)。后者为 Mac 0.1.1 / Windows 0.1.3 / Android 0.1.0，仍只同步文字，不含统一引导、网盘模式和新增图片同步。GitHub 的 Source code ZIP/TAR 是源码，不是安装包。
 

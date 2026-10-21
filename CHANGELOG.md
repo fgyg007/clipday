@@ -1,8 +1,14 @@
 # Changelog / 更新记录
 
+## v0.2.0-preview.1 — 2026-10-21
+
+- 发布 Mac、Windows、Android 预览包及 SHA-256 校验文件；更新中英文下载与安装入口。
+- 沿用已完成的构建，应用功能未变，真实设备与跨设备验收仍待完成。
+- [Release](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.1)
+
 ## 统一版验收构建 / Unified validation builds — 2026-10-18
 
-尚无新 Release / No new Release published.
+当日尚无新 Release；10 月 21 日发布记录见上文。 / No new Release on that date; see the October 21 release above.
 
 - Mac 原生、Windows x64 自包含、Android GitHub Actions 签名构建完成；Windows/Android 版本 0.2.0-preview.1，Android versionCode 2。
 - 桌面统一仅本机/NAS/网盘模式，Android 仅 NAS；新增加密图片同步、隐私暂停、失败重试、路径诊断与设置帮助。

@@ -48,7 +48,7 @@ zsh scripts/test-pairing-bridge.sh
 zsh scripts/build-windows.sh
 ```
 
-预览复用正式 `PairingCodeCard` 与 `NASController`，只填入合成数字 `123456`，从 30 秒倒计时至过期，90 秒后自动退出。不启动控制器、不读取系统剪贴板、不连接 NAS、不运行配对组件；不是实际配对测试。完整 Mac 产物为 `build/轻贴.app`，Windows 为 `build/windows-x64/ClipDay.Cloud.exe`。现有 `package.sh` 尚未开放统一版发布打包。
+预览复用正式 `PairingCodeCard` 与 `NASController`，只填入合成数字 `123456`，从 30 秒倒计时至过期，90 秒后自动退出。不启动控制器、不读取系统剪贴板、不连接 NAS、不运行配对组件；不是实际配对测试。完整 Mac 产物为 `build/轻贴.app`，Windows 为 `build/windows-x64/ClipDay.Cloud.exe`。现有 `package.sh` 仍禁用自动正式打包；2026-10-21 已将验证过的现有产物手动归档发布为 v0.2.0-preview.1，见 [版本记录](RELEASE-NOTES.md)。
 
 2026-10-18：上述预览脚本已在本机成功编译并链接，shell 语法检查通过；尚未执行窗口视觉验收。这仅验证预览目标，不代表完整应用构建与运行验收。
 

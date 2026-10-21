@@ -2,7 +2,7 @@
 
 [项目首页](../README.md) · [当前构建与历史版本](RELEASE-NOTES.md) · [模式说明](../Desktop/README.md)
 
-截至 2026-10-18，统一版已生成三端验收构建，尚无新的 GitHub Release。Android 可从[成功的云端构建](https://github.com/fgyg007/clipday/actions/runs/39104194060)下载 APK artifact（需登录 GitHub，保留 30 天）；Mac/Windows 新包目前由维护者本地构建提供。旧 NAS Release 不包含统一版新增功能。
+2026-10-21 已发布[统一版 v0.2.0-preview.1](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.1)，在 Release 的 Assets 中下载 Mac ZIP、Windows ZIP 或 Android APK，并核对 SHA256SUMS.txt。三端已完成构建，真实设备与同步互通仍待验收；旧 NAS Release 不包含统一版新增功能。
 
 ## Mac
 

@@ -12,4 +12,5 @@
     <item name="test_connection" type="id" />
     <item name="privacy_pause" type="id" />
     <item name="sync_pause" type="id" />
+    <item name="setup_result" type="id" />
 </resources>

@@ -20,7 +20,7 @@ public final class MainActivity extends Activity {
     private static final int INK = Color.rgb(27, 45, 44), MUTED = Color.rgb(100, 119, 116), TEAL = Color.rgb(8, 127, 119);
     private ClipDayApp app;
     private LinearLayout settings, history, imageHistory, root;
-    private TextView status, count, connectionTitle;
+    private TextView status, count, connectionTitle, setupResult;
     private EditText host, share, folder, username, password, code, composer, search;
     private Button connect, testConnection, send, refresh, settingsButton, privacyPause, syncPause;
     private boolean fieldsFilled, hadPair, settingsOpen = true, updatingDraft;
@@ -96,10 +96,15 @@ public final class MainActivity extends Activity {
         testConnection = button("测试 NAS 连通与读写", false); testConnection.setId(R.id.test_connection); add(settings, testConnection, 14);
         testConnection.setOnClickListener(v -> connect(true));
         connect = button("连接并配对", true); connect.setId(R.id.connect); add(settings, connect, 14);
-        watch(code, () -> connect.setText(app.paired() && code.getText().length() == 0 ? "保存并连接" : "连接并配对"));
+        watch(code, () -> { if (!app.setupBusy) connect.setText(app.paired() && code.getText().length() == 0 ? "保存并连接" : "连接并配对"); });
         add(settings, text("例如 NAS → share → selfclip：共享名称填 share，子文件夹填 selfclip。", 12, MUTED), 10);
         settingsButton.setOnClickListener(v -> { settingsOpen = !settingsOpen; settings.setVisibility(settingsOpen ? View.VISIBLE : View.GONE); });
         connect.setOnClickListener(v -> connect(false));
+        setupResult = text("测试和配对的进度与结果会显示在这里。", 14, INK);
+        setupResult.setId(R.id.setup_result); setupResult.setPadding(dp(12), dp(12), dp(12), dp(12));
+        setupResult.setBackground(background(Color.rgb(231, 244, 240), 10));
+        setupResult.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        add(connection, setupResult, 12);
         privacyPause = button("暂停隐私采集与收发", false); privacyPause.setId(R.id.privacy_pause); add(connection, privacyPause, 14);
         syncPause = button("只暂停同步", false); syncPause.setId(R.id.sync_pause); add(connection, syncPause, 8);
         privacyPause.setOnClickListener(v -> app.setPrivacyPaused(!app.privacyPaused));
@@ -125,7 +130,7 @@ public final class MainActivity extends Activity {
         add(pictures, text("Android 10 及以上仅在轻贴位于前台且获得焦点时读取剪贴板图片。复制后返回轻贴会自动保存和同步，不用手动发送。只支持静态 PNG/JPEG，单张最多 20 MiB。", 12, MUTED), 8);
         add(pictures, text("首次打开或补收的图片仅进历史；连续在线、无本地新操作时，10 秒内的新图片才自动放入剪贴板。文字接收规则不变。", 12, MUTED), 8);
         imageHistory = vertical(); add(pictures, imageHistory, 4);
-        add(root, text("轻贴 · NAS 模式 · 未发布源码\n仅在打开时同步；后台不读取剪贴板，不使用辅助功能绕过系统限制。", 12, MUTED), 20);
+        add(root, text("轻贴 · NAS 模式\n仅在打开时同步；后台不读取剪贴板，不使用辅助功能绕过系统限制。", 12, MUTED), 20);
         if (saved != null) {
             settingsOpen = saved.getBoolean("settingsOpen", true);
             for (EditText e : new EditText[]{host, share, folder, username}) if (saved.containsKey("f" + e.getId())) e.setText(saved.getString("f" + e.getId()));
@@ -170,7 +175,9 @@ public final class MainActivity extends Activity {
             JSONObject config = new JSONObject().put("host", hostText).put("port", port).put("share", share.getText().toString().trim())
                 .put("folder", folder.getText().toString().trim()).put("username", user).put("domain", domain).put("password", password.getText().toString());
             hideKeyboard(); if (testOnly) app.testConnection(config); else app.connect(config, code.getText().toString());
-        } catch (Exception e) { Toast.makeText(this, "请检查 NAS 地址和端口格式", Toast.LENGTH_LONG).show(); }
+        } catch (Exception e) { app.setupFeedback("请检查 NAS 地址和端口格式，例如 192.168.1.10 或 nas.example.com:445，不要填写网页链接。"); }
+        render();
+        setupResult.post(() -> setupResult.requestRectangleOnScreen(new android.graphics.Rect(0, 0, setupResult.getWidth(), setupResult.getHeight()), false));
     }
     private void render() {
         if (status == null) return;
@@ -191,7 +198,14 @@ public final class MainActivity extends Activity {
         status.setText(app.statusText()); settingsButton.setText(settingsOpen ? "收起" : "设置");
         connect.setText(paired && code.getText().length() == 0 ? "保存并连接" : "连接并配对");
         boolean networkEnabled = !app.privacyPaused && !app.syncPaused;
-        connect.setEnabled(app.ready && !app.busy && networkEnabled); testConnection.setEnabled(app.ready && !app.busy && networkEnabled);
+        // Keep actions tappable so paused/loading/background-sync states explain why work cannot start.
+        connect.setEnabled(!app.setupBusy); testConnection.setEnabled(!app.setupBusy);
+        testConnection.setText(app.setupBusy && "test".equals(app.setupAction) ? "正在测试 NAS…" : "测试 NAS 连通与读写");
+        if (app.setupBusy && "connect".equals(app.setupAction)) connect.setText("正在连接并配对…");
+        for (EditText field : new EditText[]{host, share, folder, username, password, code}) field.setEnabled(!app.setupBusy);
+        String feedback = app.setupMessage;
+        if (feedback.isEmpty()) feedback = !app.ready ? app.statusText() : !networkEnabled ? "当前已暂停，请先恢复同步后再测试或配对。" : "测试和配对的进度与结果会显示在这里。";
+        setupResult.setText(feedback);
         send.setEnabled(app.ready && paired && !app.saving && !app.privacyPaused);
         send.setText(app.saving ? "正在保存到本机…" : app.syncPaused ? "仅保存到本机" : "保存并发送");
         composer.setEnabled(app.ready && !app.privacyPaused);

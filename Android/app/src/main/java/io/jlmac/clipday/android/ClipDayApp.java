@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
 import io.jlmac.clipday.core.*;
 
-public final class ClipDayApp extends Application {
+public class ClipDayApp extends Application {
     final Handler ui = new Handler(Looper.getMainLooper());
     // Durable local capture must never wait behind an SMB timeout or pairing exchange.
     private final ExecutorService localWorker = Executors.newSingleThreadExecutor();
@@ -27,6 +27,9 @@ public final class ClipDayApp extends Application {
     private final Runnable retryCapture = () -> captureClipboard(false);
     private SmbStore store; // Owned only by networkWorker.
     private volatile String snapshot = "{}";
+    volatile String setupMessage = "";
+    volatile boolean setupBusy;
+    volatile String setupAction = "";
     volatile String message = "正在打开轻贴…";
     private volatile String saveError = "", pauseError = "";
     volatile boolean ready, busy, saving, online, privacyPaused, syncPaused, pauseSaving;
@@ -74,23 +77,42 @@ public final class ClipDayApp extends Application {
     private synchronized void updateSnapshot() throws Exception { snapshot = engine.snapshot().toString(); if (images != null) imageSnapshot = images.snapshot().toString(); }
     private void schedule() { ui.removeCallbacks(tick); if (visible && ready && paired() && networkEnabled()) ui.postDelayed(tick, online ? 3000 : 10000); }
     private interface NetworkJob { void run(BooleanSupplier allowed) throws Exception; }
-    private void runNetwork(String status, NetworkJob job) {
-        if (!ready || busy || !networkEnabled()) return;
+    private void runNetwork(String status, NetworkJob job) { runNetwork(status, job, false); }
+    private void runNetwork(String status, NetworkJob job, boolean setup) {
+        if (!ready || busy || !networkEnabled()) {
+            if (setup) setupFeedback(!ready ? "尚未就绪：" + message : busy ? "已有连接或同步任务正在进行，请稍后再试。" : "当前已暂停，请先点击恢复隐私采集与收发或恢复同步，再重试。");
+            return;
+        }
+        if (setup) { setupBusy = true; setupMessage = status; }
         busy = true; refreshRequested = false; message = status; notifyUi(); ui.removeCallbacks(tick);
         long token = networkEpoch;
         BooleanSupplier allowed = () -> networkEnabled() && token == networkEpoch;
         networkWorker.execute(() -> {
             try { if (!allowed.getAsBoolean()) throw new GuardedStore.Stopped(); job.run(allowed); }
-            catch (GuardedStore.Stopped e) { online = false; disconnect(); }
-            catch (Exception e) { online = false; disconnect(); message = friendly(e); }
+            catch (GuardedStore.Stopped e) { online = false; disconnect(); if (setup) setupMessage = "操作已停止：同步或隐私已暂停，请恢复后重试。"; }
+            catch (Exception e) { online = false; disconnect(); message = friendly(e); if (setup) setupMessage = "操作失败：" + message; }
             finally {
                 try { updateSnapshot(); } catch (Exception ignored) { }
                 if (!allowed.getAsBoolean()) { online = false; disconnect(); }
-                ui.post(() -> { busy = false; notifyUi(); if (refreshRequested && networkEnabled()) refresh(); else schedule(); });
+                ui.post(() -> { busy = false; if (setup) setupBusy = false; notifyUi(); if (refreshRequested && networkEnabled()) refresh(); else schedule(); });
             }
         });
     }
+    void setupFeedback(String value) { setupMessage = value; notifyUi(); }
+    private boolean validSetup(JSONObject config, String code) {
+        try {
+            new NasConfig(config);
+            if (code != null && !(code.isEmpty() && paired()) && !code.matches("[0-9]{6}"))
+                throw new Wire.UserError("请输入电脑显示的 6 位配对码，再点击连接并配对。");
+            return true;
+        } catch (Exception e) { setupFeedback("请检查输入：" + friendly(e)); return false; }
+    }
     private String friendly(Exception e) {
+        for (Throwable cause = e; cause != null; cause = cause.getCause()) {
+            if (cause instanceof java.net.UnknownHostException) return "无法解析 NAS 地址，请检查域名或改用局域网 IP。QuickConnect 网页地址不支持 SMB。";
+            if (cause instanceof java.net.SocketTimeoutException) return "连接 NAS 超时，请确认手机与 NAS 在同一局域网或已连接 VPN，并检查 SMB 服务与端口。";
+            if (cause instanceof java.net.ConnectException || cause instanceof java.net.NoRouteToHostException) return "无法连接 NAS 的 SMB 端口，请检查网络、VPN、SMB 服务和防火墙。";
+        }
         if (e instanceof Wire.UserError) return e.getMessage();
         if (e instanceof com.hierynomus.mssmb2.SMBApiException) {
             long code = ((com.hierynomus.mssmb2.SMBApiException)e).getStatusCode();
@@ -105,14 +127,19 @@ public final class ClipDayApp extends Application {
         store.setNetworkAllowed(allowed); return store;
     }
     void testConnection(JSONObject config) {
+        if (!validSetup(config, null)) return;
+        setupAction = "test";
         runNetwork("正在测试 NAS 连通、读取、写入及删除权限…", allowed -> {
             try (SmbStore candidate = new SmbStore(new NasConfig(config), allowed)) {
                 ConnectionDiagnostics.check(new GuardedStore(candidate, allowed));
-                message = "NAS 已连通 · 同步目录可读写、可删除。下一步：在电脑显示配对码，让手机加入原空间。";
+                setupMessage = "测试成功：NAS 已连通，同步目录可读取、写入及删除。测试不会保存连接或完成配对；下一步请输入电脑上的配对码。";
+                message = setupMessage;
             }
-        });
+        }, true);
     }
     void connect(JSONObject config, String code) {
+        if (!validSetup(config, code)) return;
+        setupAction = "connect";
         runNetwork(code.isEmpty() ? "正在验证 NAS 连接与读写权限…" : "正在验证 NAS 并与电脑配对…", allowed -> {
             NasConfig parsed = new NasConfig(config); disconnect();
             SmbStore candidate = new SmbStore(parsed, allowed);
@@ -129,12 +156,14 @@ public final class ClipDayApp extends Application {
                     images.configure(pair, engine.snapshot().getString("device")); connectionRevision++;
                 }
                 guarded.check(); store = candidate; candidate = null; online = true;
+                setupMessage = existing ? "连接成功：NAS 设置已保存，原配对保留。" : "配对成功：已加入电脑同步空间并保存连接设置。";
+                ui.post(this::notifyUi);
             } finally { if (candidate != null) candidate.close(); }
             // A later network failure must not turn a completed pairing into a pairing error.
             try { pollBoth(store, allowed); }
             catch (GuardedStore.Stopped e) { throw e; }
-            catch (Exception e) { online = false; disconnect(); message = "配对已保存。后续同步未完成：" + friendly(e); }
-        });
+            catch (Exception e) { online = false; disconnect(); message = "配对已保存。后续同步未完成：" + friendly(e); setupMessage = message; }
+        }, true);
     }
     private void report(SyncEngine.PollResult result) throws Exception {
         if (result.paused) { online = false; return; }

@@ -78,6 +78,17 @@ public class ImageEngineTest {
         ImageEngine e=engine();e.enqueue(png,"Android",now,()->true);assertThrows(Wire.UserError.class,()->e.configure(Wire.cloneJson(pair).put("space",Wire.id()),e.snapshot().getString("device")));
         Path target=dir.resolve("outside");Files.createDirectories(target);Path link=dir.resolve("link");Files.createSymbolicLink(link,target);assertThrows(Wire.UserError.class,()->new ImageFiles(link));
     }
+    @Test public void androidPrivateRootAllowsSystemManagedSymlinkParentOnly() throws Exception {
+        Path real = dir.resolve("system-real"); Files.createDirectories(real);
+        Path mapped = dir.resolve("system-mapped"); Files.createSymbolicLink(mapped, real);
+        Path appPrivate = mapped.resolve("package-no-backup").resolve("images-v1");
+        assertThrows(Wire.UserError.class, () -> new ImageFiles(appPrivate, path -> {}, false));
+        ImageFiles android = new ImageFiles(appPrivate, path -> {}, true);
+        assertEquals(0, android.bytes());
+
+        Path rootLink = mapped.resolve("bad-root"); Files.createSymbolicLink(rootLink, real);
+        assertThrows(Wire.UserError.class, () -> new ImageFiles(rootLink, path -> {}, true));
+    }
     @Test public void cleanStartupDoesNotRequireDirectorySync() throws Exception {
         AtomicInteger syncs = new AtomicInteger();
         ImageFiles files = new ImageFiles(dir.resolve("clean-startup"), path -> syncs.incrementAndGet());

@@ -59,7 +59,7 @@ public class ClipDayApp extends Application {
                             if (e.errno != android.system.OsConstants.EINVAL && e.errno != android.system.OsConstants.ENOTSUP) throw e;
                         }
                     } finally { android.system.Os.close(descriptor); }
-                }), ImageCodec::validate);
+                }, true), ImageCodec::validate);
                 if (engine.paired()) images.configure(engine.snapshot().getJSONObject("pair"), engine.snapshot().getString("device"));
                 images.prune(System.currentTimeMillis());
                 updateSnapshot(); privacyPaused = engine.privacyPaused(); if (privacyPaused) clipboardGate.pause(); syncPaused = engine.syncPaused(); ready = true;

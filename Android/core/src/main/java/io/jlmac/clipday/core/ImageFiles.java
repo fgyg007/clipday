@@ -12,13 +12,20 @@ public final class ImageFiles {
     private final Path root;
     private final DirectorySync directorySync;
     public ImageFiles(Path directory) throws Exception {
-        this(directory, path -> { try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) { channel.force(true); } });
+        this(directory, path -> { try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) { channel.force(true); } }, false);
     }
     public ImageFiles(Path directory, DirectorySync directorySync) throws Exception {
+        this(directory, directorySync, false);
+    }
+    public ImageFiles(Path directory, DirectorySync directorySync, boolean trustSystemParents) throws Exception {
         this.directorySync = directorySync;
         root = directory.toAbsolutePath().normalize();
-        for (Path p = root; p != null; p = p.getParent()) Wire.require(!Files.isSymbolicLink(p));
-        Files.createDirectories(root); Wire.require(Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS));
+        // Android owns the ancestors of getNoBackupFilesDir(). Vendors may expose
+        // /data/user/0 through a symlink or equivalent mapping. The app cannot
+        // replace those system parents, so only the app-owned root must be checked.
+        if (!trustSystemParents) for (Path p = root; p != null; p = p.getParent()) Wire.require(!Files.isSymbolicLink(p));
+        Files.createDirectories(root);
+        Wire.require(!Files.isSymbolicLink(root) && Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS));
     }
     private Path path(String id, int index) throws Exception {
         Wire.require(Wire.isId(id) && index >= 0 && index < 20);

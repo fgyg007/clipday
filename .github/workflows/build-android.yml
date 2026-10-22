@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/release/app-release.apk
           mkdir -p ../dist/android
-          cp app/build/outputs/apk/release/app-release.apk ../dist/android/ClipDay-0.2.0-preview.3-android.apk
+          cp app/build/outputs/apk/release/app-release.apk ../dist/android/ClipDay-0.2.0-preview.4-android.apk
           cd ../dist/android
           sha256sum *.apk > SHA256SUMS.txt
       - uses: actions/upload-artifact@v4

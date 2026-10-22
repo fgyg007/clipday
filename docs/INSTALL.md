@@ -4,7 +4,7 @@
 
 2026-10-21 已发布[统一版 v0.2.0-preview.1](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.1)，在 Release 的 Assets 中下载 Mac ZIP、Windows ZIP 或 Android APK，并核对 SHA256SUMS.txt。三端已完成构建，真实设备与同步互通仍待验收；旧 NAS Release 不包含统一版新增功能。
 
-Android 请使用修复版 [0.2.0-preview.3](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.3)（versionCode 4），覆盖安装保留数据。该版兼容不支持图片缓存目录同步操作的手机，并细分本机状态、密钥和存储错误提示。不要先卸载或清除数据。测试和配对进度显示在按钮下方；测试成功只验证目录权限，不等于配对成功。
+Android 请使用修复版 [0.2.0-preview.4](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.4)（versionCode 5），覆盖安装保留数据。应用私有文件夹由 Android 自动创建，不需要用户选择或授予共享存储权限；该版兼容厂商系统对私有目录父路径的映射。不要先卸载或清除数据。
 
 ## Mac
 

@@ -14,9 +14,9 @@
 | --- | --- | --- |
 | macOS | [下载 Mac ZIP](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-macos-arm64.zip) | Apple Silicon、macOS 14+；解压后安装轻贴.app。包内版本保留 0.1.1 / 0.2.0-dev |
 | Windows | [下载 Windows ZIP](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/ClipDay-0.2.0-preview.1-windows-x64.zip) | x64，自带 .NET；解压运行 ClipDay/ClipDay.Cloud.exe |
-| Android | [下载 APK](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.2/ClipDay-0.2.0-preview.2-android.apk) | Android 8.0+；0.2.0-preview.2、versionCode 3，仅支持 NAS |
+| Android | [下载 APK](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.3/ClipDay-0.2.0-preview.3-android.apk) | Android 8.0+；0.2.0-preview.3、versionCode 4，仅支持 NAS |
 
-Android 已更新至 [0.2.0-preview.2](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.2)：修复 NAS 测试与配对无明显反馈；[安卓校验文件](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.2/SHA256SUMS.txt)。Mac/Windows 继续使用 preview.1。
+Android 已更新至 [0.2.0-preview.3](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.3)：修复部分手机启动时把图片缓存目录操作误报为“加密数据读取失败”，并保留 NAS 测试与配对反馈修复。Mac/Windows 继续使用 preview.1。
 
 [SHA-256 校验文件](https://github.com/fgyg007/clipday/releases/download/v0.2.0-preview.1/SHA256SUMS.txt)。Android 签名与旧 APK 相同，覆盖安装，不要先卸载。Release 附件不受 Actions artifact 的 30 天保留期限制。实际手机升级仍待验收。
 

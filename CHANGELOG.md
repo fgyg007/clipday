@@ -1,5 +1,10 @@
 # Changelog / 更新记录
 
+## Android 0.2.0-preview.3 — 2026-10-22
+
+- 兼容不支持图片缓存目录 `fsync` 的 Android 文件系统，避免启动时误报本机加密数据读取失败。
+- 改进启动错误分类，并增加图片缓存干净启动回归测试。
+
 ## 2026-10-21：Android 连接反馈修复 v0.2.0-preview.2
 
 [Android APK 与校验文件](https://github.com/fgyg007/clipday/releases/tag/v0.2.0-preview.2)；Mac/Windows 仍使用 preview.1。

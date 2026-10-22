@@ -3,6 +3,7 @@ package io.jlmac.clipday.android;
 import android.app.Application;
 import android.content.*;
 import android.net.Uri;
+import android.system.ErrnoException;
 import java.util.Arrays;
 import android.os.*;
 import org.json.JSONObject;
@@ -49,15 +50,37 @@ public class ClipDayApp extends Application {
                 Vault imageVault = new Vault(this, "images-state.enc");
                 images = new ImageEngine(imageVault.load(), imageVault::save, new ImageFiles(new java.io.File(getNoBackupFilesDir(), "images-v1").toPath(), directory -> {
                     java.io.FileDescriptor descriptor = android.system.Os.open(directory.toString(), android.system.OsConstants.O_RDONLY, 0);
-                    try { Wire.require(android.system.OsConstants.S_ISDIR(android.system.Os.fstat(descriptor).st_mode)); android.system.Os.fsync(descriptor); } finally { android.system.Os.close(descriptor); }
+                    try {
+                        Wire.require(android.system.OsConstants.S_ISDIR(android.system.Os.fstat(descriptor).st_mode));
+                        try { android.system.Os.fsync(descriptor); }
+                        catch (ErrnoException e) {
+                            // Directory fsync is unsupported on some valid Android
+                            // filesystems. File contents are still fsynced before rename.
+                            if (e.errno != android.system.OsConstants.EINVAL && e.errno != android.system.OsConstants.ENOTSUP) throw e;
+                        }
+                    } finally { android.system.Os.close(descriptor); }
                 }), ImageCodec::validate);
                 if (engine.paired()) images.configure(engine.snapshot().getJSONObject("pair"), engine.snapshot().getString("device"));
                 images.prune(System.currentTimeMillis());
                 updateSnapshot(); privacyPaused = engine.privacyPaused(); if (privacyPaused) clipboardGate.pause(); syncPaused = engine.syncPaused(); ready = true;
                 message = engine.paired() ? "已配对，正在连接 NAS…" : "先在电脑创建同步空间，再让手机加入同一 NAS 文件夹";
-            } catch (Exception e) { message = "无法读取本机加密数据，请重启手机后重试。"; }
+            } catch (Exception e) {
+                android.util.Log.e("ClipDayStartup", "Startup failed at local state or image cache initialization", e);
+                message = startupFailure(e);
+            }
             ui.post(() -> { notifyUi(); if (visible && paired() && networkEnabled()) refresh(); });
         });
+    }
+    private String startupFailure(Exception error) {
+        for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+            if (cause instanceof javax.crypto.AEADBadTagException || cause instanceof java.security.UnrecoverableKeyException)
+                return "本机加密数据与手机密钥不匹配。请勿卸载应用；安装修复版后若仍出现，请使用下方恢复入口保留诊断信息。";
+            if (cause instanceof ErrnoException)
+                return "手机存储不支持图片缓存所需操作。请安装修复版；重启手机不会解决。";
+            if (cause instanceof java.io.IOException)
+                return "本机状态文件读取失败，可能是存储空间不足或文件损坏。请勿卸载应用或清除数据。";
+        }
+        return "轻贴本机状态初始化失败。请勿卸载应用或清除数据；此问题不是重启手机可以解决的。";
     }
     JSONObject state() { try { return new JSONObject(snapshot); } catch (Exception e) { return new JSONObject(); } }
     JSONObject imageState() { try { return new JSONObject(imageSnapshot); } catch (Exception e) { return new JSONObject(); } }

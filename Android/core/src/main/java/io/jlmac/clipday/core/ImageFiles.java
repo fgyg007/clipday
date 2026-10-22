@@ -57,15 +57,18 @@ public final class ImageFiles {
     }
     public synchronized void remove(String id) throws Exception { for (int i = 0; i < 20; i++) Files.deleteIfExists(path(id, i)); syncDirectory(); }
     public synchronized void reconcile(Set<String> retained) throws Exception {
+        boolean changed = false;
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
             int entries = 0;
             for (Path p : stream) {
                 Wire.require(++entries <= 25000 && !Files.isSymbolicLink(p)); String n = p.getFileName().toString();
-                if (n.matches("\\.[0-9a-f-]{36}\\.tmp")) Files.deleteIfExists(p);
-                else if (n.matches("[0-9a-f-]{36}\\.[0-9]{3}\\.chunk") && !retained.contains(n.substring(0,36))) Files.deleteIfExists(p);
+                if (n.matches("\\.[0-9a-f-]{36}\\.tmp")) changed |= Files.deleteIfExists(p);
+                else if (n.matches("[0-9a-f-]{36}\\.[0-9]{3}\\.chunk") && !retained.contains(n.substring(0,36))) changed |= Files.deleteIfExists(p);
             }
         }
-        syncDirectory();
+        // Opening the app must not require a directory fsync when reconciliation
+        // did not mutate anything. Some Android filesystems reject directory fsync.
+        if (changed) syncDirectory();
     }
     private void syncDirectory() throws Exception {
         directorySync.sync(root);

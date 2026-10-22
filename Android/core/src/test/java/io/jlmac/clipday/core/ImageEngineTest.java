@@ -78,6 +78,17 @@ public class ImageEngineTest {
         ImageEngine e=engine();e.enqueue(png,"Android",now,()->true);assertThrows(Wire.UserError.class,()->e.configure(Wire.cloneJson(pair).put("space",Wire.id()),e.snapshot().getString("device")));
         Path target=dir.resolve("outside");Files.createDirectories(target);Path link=dir.resolve("link");Files.createSymbolicLink(link,target);assertThrows(Wire.UserError.class,()->new ImageFiles(link));
     }
+    @Test public void cleanStartupDoesNotRequireDirectorySync() throws Exception {
+        AtomicInteger syncs = new AtomicInteger();
+        ImageFiles files = new ImageFiles(dir.resolve("clean-startup"), path -> syncs.incrementAndGet());
+        new ImageEngine(null, value -> {}, files, ImageWire::verifyImage);
+        assertEquals("An unchanged cache must not fsync its directory during app startup", 0, syncs.get());
+
+        Path stale = dir.resolve("clean-startup").resolve("." + Wire.id() + ".tmp");
+        Files.write(stale, new byte[]{1});
+        new ImageEngine(null, value -> {}, files, ImageWire::verifyImage);
+        assertEquals("Deleting a stale cache file must still sync the directory", 1, syncs.get());
+    }
     @Test public void failedMetadataCommitDoesNotLeaveUntrackedPlainOrCiphertext()throws Exception{
         ImageEngine configured=engine();ImageEngine broken=new ImageEngine(configured.snapshot(),n->{throw new IOException("disk full");},new ImageFiles(cache),ImageWire::verifyImage);
         assertThrows(IOException.class,()->broken.enqueue(png,"Android",now,()->true));assertEquals(0,new ImageFiles(cache).bytes());
